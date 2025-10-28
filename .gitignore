@@ -1,0 +1,54 @@
+# Python virtual environment - MUST BE FIRST
+venv/
+env/
+ENV/
+venv.bak/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Environment variables - CONTAINS API KEYS
+.env
+.env.local
+.env.*.local
+
+# Vector database - large files
+vector_db/
+chroma_db/
+
+# Output files - keep structure but ignore generated files
+outputs/*.txt
+outputs/*.pdf
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Distribution
+dist/
+build/
+*.egg-info/

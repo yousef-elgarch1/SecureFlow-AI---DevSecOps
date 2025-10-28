@@ -1,0 +1,226 @@
+{
+  "results": [
+    {
+      "check_id": "javascript.express.security.audit.xss.mustache.explicit-unescape",
+      "path": "app/views/profile.js",
+      "start": {
+        "line": 42,
+        "col": 12
+      },
+      "end": {
+        "line": 42,
+        "col": 35
+      },
+      "extra": {
+        "message": "Detected explicit unescaping of user input in Mustache template. This can lead to XSS vulnerabilities.",
+        "severity": "HIGH",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+          "owasp": "A03:2021 - Injection",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-check-csurf-middleware-missing",
+      "path": "server.js",
+      "start": {
+        "line": 15,
+        "col": 1
+      },
+      "end": {
+        "line": 15,
+        "col": 20
+      },
+      "extra": {
+        "message": "CSRF protection middleware not detected. This application may be vulnerable to Cross-Site Request Forgery attacks.",
+        "severity": "CRITICAL",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+          "owasp": "A01:2021 - Broken Access Control",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.sqli.node-postgres-sqli",
+      "path": "app/data/user-dao.js",
+      "start": {
+        "line": 87,
+        "col": 8
+      },
+      "end": {
+        "line": 87,
+        "col": 65
+      },
+      "extra": {
+        "message": "Detected SQL query concatenation with user input. This could lead to SQL injection vulnerabilities.",
+        "severity": "CRITICAL",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+          "owasp": "A03:2021 - Injection",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.hardcoded-secret",
+      "path": "config/env.js",
+      "start": {
+        "line": 23,
+        "col": 20
+      },
+      "end": {
+        "line": 23,
+        "col": 45
+      },
+      "extra": {
+        "message": "Hardcoded secret detected. Secrets should be stored in environment variables or secret management systems.",
+        "severity": "HIGH",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-798: Use of Hard-coded Credentials",
+          "owasp": "A02:2021 - Cryptographic Failures",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-path-join",
+      "path": "app/routes/contributions.js",
+      "start": {
+        "line": 156,
+        "col": 12
+      },
+      "end": {
+        "line": 156,
+        "col": 48
+      },
+      "extra": {
+        "message": "Detected path traversal vulnerability. User input is used directly in file path construction.",
+        "severity": "HIGH",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+          "owasp": "A01:2021 - Broken Access Control",
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-insecure-session",
+      "path": "server.js",
+      "start": {
+        "line": 28,
+        "col": 5
+      },
+      "end": {
+        "line": 32,
+        "col": 7
+      },
+      "extra": {
+        "message": "Express session configured with insecure settings. Cookie should be set to secure and httpOnly.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute",
+          "owasp": "A05:2021 - Security Misconfiguration",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.weak-crypto",
+      "path": "app/utils/crypto.js",
+      "start": {
+        "line": 12,
+        "col": 18
+      },
+      "end": {
+        "line": 12,
+        "col": 35
+      },
+      "extra": {
+        "message": "Weak cryptographic algorithm 'md5' detected. Use SHA-256 or stronger.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-327: Use of a Broken or Risky Cryptographic Algorithm",
+          "owasp": "A02:2021 - Cryptographic Failures",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-missing-helmet",
+      "path": "server.js",
+      "start": {
+        "line": 1,
+        "col": 1
+      },
+      "end": {
+        "line": 50,
+        "col": 1
+      },
+      "extra": {
+        "message": "Helmet middleware not detected. Security headers are not being set.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-693: Protection Mechanism Failure",
+          "owasp": "A05:2021 - Security Misconfiguration",
+          "confidence": "MEDIUM"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.insecure-random",
+      "path": "app/utils/token.js",
+      "start": {
+        "line": 45,
+        "col": 16
+      },
+      "end": {
+        "line": 45,
+        "col": 29
+      },
+      "extra": {
+        "message": "Math.random() is not cryptographically secure. Use crypto.randomBytes() instead.",
+        "severity": "LOW",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)",
+          "owasp": "A02:2021 - Cryptographic Failures",
+          "confidence": "HIGH"
+        }
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-open-redirect",
+      "path": "app/routes/login.js",
+      "start": {
+        "line": 78,
+        "col": 8
+      },
+      "end": {
+        "line": 78,
+        "col": 35
+      },
+      "extra": {
+        "message": "Open redirect vulnerability detected. User-controlled input is used in redirect URL.",
+        "severity": "MEDIUM",
+        "metadata": {
+          "category": "security",
+          "cwe": "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')",
+          "owasp": "A01:2021 - Broken Access Control",
+          "confidence": "MEDIUM"
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "version": "1.45.0"
+}

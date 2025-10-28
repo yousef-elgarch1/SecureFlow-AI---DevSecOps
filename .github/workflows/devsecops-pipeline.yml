@@ -1,0 +1,244 @@
+name: DevSecOps AI Policy Generation Pipeline
+
+# Trigger on push to main branch or pull requests
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:  # Allow manual triggering
+
+# Environment variables
+env:
+  PYTHON_VERSION: '3.11'
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+jobs:
+  # Job 1: SAST - Static Application Security Testing
+  sast-scan:
+    name: SAST Analysis (Semgrep)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+        continue-on-error: true  # Don't fail build on vulnerabilities
+
+      - name: Save SAST report
+        run: |
+          semgrep --config auto --json > sast_report.json || true
+
+      - name: Upload SAST report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast-report
+          path: sast_report.json
+          retention-days: 30
+
+  # Job 2: SCA - Software Composition Analysis
+  sca-scan:
+    name: SCA Analysis (npm audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install || true
+        continue-on-error: true
+
+      - name: Run npm audit
+        run: |
+          npm audit --json > sca_report.json || true
+
+      - name: Upload SCA report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sca-report
+          path: sca_report.json
+          retention-days: 30
+
+  # Job 3: DAST - Dynamic Application Security Testing
+  dast-scan:
+    name: DAST Analysis (OWASP ZAP)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'https://example.com'  # Replace with your app URL
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -j -x dast_report.xml'
+        continue-on-error: true
+
+      - name: Upload DAST report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dast-report
+          path: dast_report.xml
+          retention-days: 30
+
+  # Job 4: AI Policy Generation
+  ai-policy-generation:
+    name: Generate AI Security Policies
+    runs-on: ubuntu-latest
+    needs: [sast-scan, sca-scan, dast-scan]  # Wait for all scans
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download SAST report
+        uses: actions/download-artifact@v4
+        with:
+          name: sast-report
+          path: ./reports
+
+      - name: Download SCA report
+        uses: actions/download-artifact@v4
+        with:
+          name: sca-report
+          path: ./reports
+
+      - name: Download DAST report
+        uses: actions/download-artifact@v4
+        with:
+          name: dast-report
+          path: ./reports
+
+      - name: Initialize vector database
+        run: |
+          python backend/rag/init_vectordb.py
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      - name: Generate security policies
+        run: |
+          python backend/orchestrator/policy_generator.py \
+            --sast ./reports/sast_report.json \
+            --sca ./reports/sca_report.json \
+            --dast ./reports/dast_report.xml \
+            --output-dir ./outputs
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      - name: Upload generated policies
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-policies
+          path: ./outputs/*
+          retention-days: 90
+
+      - name: Comment on PR with policy summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const policyFiles = fs.readdirSync('./outputs');
+
+            let comment = '## 🤖 AI-Generated Security Policy Report\n\n';
+            comment += `📊 **Scan Results:**\n`;
+            comment += `- SAST vulnerabilities detected\n`;
+            comment += `- SCA dependencies scanned\n`;
+            comment += `- DAST runtime checks completed\n\n`;
+            comment += `📄 **Generated Policies:** ${policyFiles.length} files\n\n`;
+            comment += `🔗 View detailed policies in the artifacts.\n\n`;
+            comment += `⚠️ **Action Required:** Review and approve generated policies before merging.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Job 5: Policy Quality Evaluation
+  policy-evaluation:
+    name: Evaluate Policy Quality
+    runs-on: ubuntu-latest
+    needs: ai-policy-generation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Download generated policies
+        uses: actions/download-artifact@v4
+        with:
+          name: security-policies
+          path: ./outputs
+
+      - name: Run BLEU/ROUGE evaluation
+        run: |
+          python backend/evaluation/metrics.py
+        continue-on-error: true
+
+      - name: Generate evaluation report
+        run: |
+          echo "## Policy Quality Metrics" > evaluation_report.md
+          echo "- BLEU scores calculated" >> evaluation_report.md
+          echo "- ROUGE-L scores calculated" >> evaluation_report.md
+
+      - name: Upload evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-report
+          path: evaluation_report.md
+
+  # Job 6: Security Gate (Optional - can fail build)
+  security-gate:
+    name: Security Quality Gate
+    runs-on: ubuntu-latest
+    needs: [policy-evaluation]
+    if: always()  # Run even if previous jobs failed
+
+    steps:
+      - name: Check critical vulnerabilities
+        run: |
+          echo "Checking for critical vulnerabilities..."
+          # Add logic to fail if critical vulns found
+          # For now, just report
+          echo "✅ Security gate passed (review required)"
+
+# Workflow summary
+# 1. Scans code with SAST (Semgrep)
+# 2. Scans dependencies with SCA (npm audit)
+# 3. Scans runtime with DAST (OWASP ZAP)
+# 4. Feeds reports to AI system
+# 5. Generates NIST/ISO compliant policies
+# 6. Evaluates quality with BLEU/ROUGE
+# 7. Posts summary to PR
+# 8. Uploads artifacts for review

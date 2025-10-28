@@ -1,0 +1,129 @@
+# AI-Driven Security Policy Generator Configuration
+
+# Application Settings
+app:
+  name: "SecPolicy AI"
+  version: "1.0.0"
+  debug: true
+
+# LLM Configuration - Plan B (Cloud APIs)
+llm:
+  mode: "cloud"  # Options: "cloud" or "local"
+
+  # Cloud Configuration (Plan B - Fast)
+  cloud:
+    sast:
+      provider: "groq"
+      model: "llama-3.3-70b-versatile"
+      temperature: 0.3
+      max_tokens: 2000
+
+    sca:
+      provider: "groq"
+      model: "llama-3.3-70b-versatile"
+      temperature: 0.3
+      max_tokens: 2000
+
+    dast:
+      provider: "deepseek"
+      model: "deepseek-chat"
+      temperature: 0.3
+      max_tokens: 2000
+
+    orchestrator:
+      provider: "openai"
+      model: "gpt-4o-mini"
+      temperature: 0.3
+      max_tokens: 4000
+
+  # Local Configuration (Plan A - Fallback)
+  local:
+    sast_model: "llama3.3:70b"
+    sca_model: "llama3.3:70b"
+    dast_model: "deepseek-r1:70b"
+    orchestrator_model: "llama3.3:70b"
+    ollama_base_url: "http://localhost:11434"
+
+# RAG Configuration
+rag:
+  vector_db:
+    type: "chromadb"
+    persist_directory: "./vector_db"
+    collection_name: "compliance_docs"
+
+  embeddings:
+    model: "all-MiniLM-L6-v2"
+    device: "cpu"  # Change to "cuda" if GPU available
+
+  retrieval:
+    top_k: 10
+    similarity_threshold: 0.5
+
+# Parser Configuration
+parsers:
+  sast:
+    supported_formats: ["json"]
+    supported_tools: ["semgrep", "sonarqube", "checkmarx", "bandit"]
+    severity_levels: ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+
+  sca:
+    supported_formats: ["json"]
+    supported_tools: ["npm_audit", "pip_audit", "owasp_dependency_check", "snyk"]
+    severity_levels: ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+
+  dast:
+    supported_formats: ["xml", "json"]
+    supported_tools: ["owasp_zap", "burp_suite", "acunetix"]
+    severity_levels: ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+
+# Compliance Frameworks
+compliance:
+  nist_csf:
+    functions: ["Identify", "Protect", "Detect", "Respond", "Recover"]
+    min_coverage: 85  # Percentage
+
+  iso_27001:
+    version: "2022"
+    themes: ["Organizational", "People", "Physical", "Technological"]
+    min_controls: 10  # Minimum number of controls to reference
+
+# Evaluation Metrics
+evaluation:
+  metrics:
+    - "bleu"
+    - "rouge_l"
+    - "compliance_coverage"
+    - "readability"
+
+  targets:
+    bleu_score: 0.70
+    rouge_l_score: 0.65
+    compliance_coverage: 85
+
+# Output Configuration
+output:
+  format: "pdf"  # Options: "pdf", "docx", "markdown"
+  include_compliance_report: true
+  include_gap_analysis: true
+  save_directory: "./outputs/generated_policies"
+
+# Logging
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/app.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+
+# Security
+security:
+  max_file_size_mb: 10
+  allowed_file_extensions: [".json", ".xml"]
+  sanitize_inputs: true
+
+# Performance
+performance:
+  max_concurrent_requests: 5
+  request_timeout: 300  # seconds
+  cache_enabled: true
+  cache_ttl: 3600  # seconds

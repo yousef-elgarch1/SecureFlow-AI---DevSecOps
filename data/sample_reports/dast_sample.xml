@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<OWASPZAPReport version="2.14.0" generated="Mon, 23 Oct 2023 14:32:15">
+<site name="http://localhost:4000" host="localhost" port="4000" ssl="false">
+<alerts>
+<alertitem>
+  <pluginid>40012</pluginid>
+  <alertRef>40012</alertRef>
+  <alert>Cross Site Scripting (Reflected)</alert>
+  <name>Cross Site Scripting (Reflected)</name>
+  <riskcode>3</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>High (Medium)</riskdesc>
+  <desc>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/search</uri>
+    <method>GET</method>
+    <param>q</param>
+    <attack>&lt;script&gt;alert(1)&lt;/script&gt;</attack>
+    <evidence>&lt;script&gt;alert(1)&lt;/script&gt;</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.</solution>
+  <otherinfo>User-controlled input is reflected in the response without proper encoding.</otherinfo>
+  <reference>https://owasp.org/www-community/attacks/xss/</reference>
+  <cweid>79</cweid>
+  <wascid>8</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>40014</pluginid>
+  <alertRef>40014</alertRef>
+  <alert>Cross Site Scripting (Persistent)</alert>
+  <name>Cross Site Scripting (Persistent)</name>
+  <riskcode>3</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>High (Medium)</riskdesc>
+  <desc>Cross-site Scripting (XSS) is stored on the server and executed when users access affected pages.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/profile</uri>
+    <method>POST</method>
+    <param>bio</param>
+    <attack>&lt;img src=x onerror=alert(1)&gt;</attack>
+    <evidence>&lt;img src=x onerror=alert(1)&gt;</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Validate all user input and encode output properly.</solution>
+  <otherinfo>Persistent XSS found in user profile bio field.</otherinfo>
+  <reference>https://owasp.org/www-community/attacks/xss/</reference>
+  <cweid>79</cweid>
+  <wascid>8</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>90020</pluginid>
+  <alertRef>90020</alertRef>
+  <alert>Missing Anti-CSRF Tokens</alert>
+  <name>Missing Anti-CSRF Tokens</name>
+  <riskcode>3</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>High (Medium)</riskdesc>
+  <desc>No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/contributions/add</uri>
+    <method>POST</method>
+    <param></param>
+    <evidence>&lt;form action="/contributions/add" method="POST"&gt;</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Implement anti-CSRF tokens for all state-changing operations.</solution>
+  <otherinfo>No known Anti-CSRF token found in form.</otherinfo>
+  <reference>https://owasp.org/www-community/attacks/csrf</reference>
+  <cweid>352</cweid>
+  <wascid>9</wascid>
+  <sourceid>1</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>10098</pluginid>
+  <alertRef>10098</alertRef>
+  <alert>Cross-Domain Misconfiguration</alert>
+  <name>Cross-Domain Misconfiguration</name>
+  <riskcode>2</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>Medium (Medium)</riskdesc>
+  <desc>Web browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/api/users</uri>
+    <method>GET</method>
+    <param>Access-Control-Allow-Origin</param>
+    <evidence>Access-Control-Allow-Origin: *</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Ensure that sensitive data is not available in an unauthenticated manner. Configure CORS headers properly.</solution>
+  <otherinfo>The CORS misconfiguration allows any domain to make requests.</otherinfo>
+  <reference>https://owasp.org/www-community/attacks/CORS_OriginHeaderScrutiny</reference>
+  <cweid>264</cweid>
+  <wascid>14</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>10021</pluginid>
+  <alertRef>10021</alertRef>
+  <alert>X-Content-Type-Options Header Missing</alert>
+  <name>X-Content-Type-Options Header Missing</name>
+  <riskcode>1</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>Low (Medium)</riskdesc>
+  <desc>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/</uri>
+    <method>GET</method>
+    <param>X-Content-Type-Options</param>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Set X-Content-Type-Options header to 'nosniff' for all responses.</solution>
+  <otherinfo>This header should be set on all responses containing user controllable content.</otherinfo>
+  <reference>https://owasp.org/www-project-secure-headers/</reference>
+  <cweid>693</cweid>
+  <wascid>15</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>10035</pluginid>
+  <alertRef>10035</alertRef>
+  <alert>Strict-Transport-Security Header Not Set</alert>
+  <name>Strict-Transport-Security Header Not Set</name>
+  <riskcode>1</riskcode>
+  <confidence>3</confidence>
+  <riskdesc>Low (High)</riskdesc>
+  <desc>HTTP Strict Transport Security (HSTS) is a web security policy mechanism whereby a web server declares that complying user agents (such as a web browser) are to interact with it using only secure HTTPS connections.</desc>
+  <instances>
+  <instance>
+    <uri>https://localhost:4000/</uri>
+    <method>GET</method>
+    <param></param>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Set the Strict-Transport-Security header on HTTPS responses.</solution>
+  <otherinfo>HSTS is not configured properly.</otherinfo>
+  <reference>https://owasp.org/www-project-secure-headers/</reference>
+  <cweid>319</cweid>
+  <wascid>15</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>10105</pluginid>
+  <alertRef>10105</alertRef>
+  <alert>Weak Authentication Method</alert>
+  <name>Weak Authentication Method</name>
+  <riskcode>2</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>Medium (Medium)</riskdesc>
+  <desc>HTTP basic or digest authentication has been used over an insecure connection. The credentials can be read and then reused by someone with access to the network.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/login</uri>
+    <method>POST</method>
+    <param>username</param>
+    <evidence>Basic Authentication over HTTP</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Use HTTPS for all authentication. Consider using stronger authentication mechanisms like OAuth2 or JWT.</solution>
+  <otherinfo>Basic authentication credentials transmitted without encryption.</otherinfo>
+  <reference>https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html</reference>
+  <cweid>287</cweid>
+  <wascid>1</wascid>
+  <sourceid>1</sourceid>
+</alertitem>
+
+<alertitem>
+  <pluginid>10055</pluginid>
+  <alertRef>10055</alertRef>
+  <alert>CSP: Wildcard Directive</alert>
+  <name>CSP: Wildcard Directive</name>
+  <riskcode>2</riskcode>
+  <confidence>2</confidence>
+  <riskdesc>Medium (Medium)</riskdesc>
+  <desc>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks. The following directives either allow wildcard sources or are missing.</desc>
+  <instances>
+  <instance>
+    <uri>http://localhost:4000/</uri>
+    <method>GET</method>
+    <param>Content-Security-Policy</param>
+    <evidence>default-src *</evidence>
+  </instance>
+  </instances>
+  <count>1</count>
+  <solution>Configure Content Security Policy with specific, restrictive directives.</solution>
+  <otherinfo>CSP header present but uses wildcard directive which defeats the purpose.</otherinfo>
+  <reference>https://owasp.org/www-project-secure-headers/</reference>
+  <cweid>693</cweid>
+  <wascid>15</wascid>
+  <sourceid>3</sourceid>
+</alertitem>
+
+</alerts>
+</site>
+</OWASPZAPReport>

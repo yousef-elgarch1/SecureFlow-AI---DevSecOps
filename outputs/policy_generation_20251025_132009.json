@@ -1,0 +1,192 @@
+{
+  "llama-3.3-70b-versatile": [
+    {
+      "type": "SAST",
+      "vulnerability": {
+        "title": "Explicit Unescape",
+        "severity": "HIGH",
+        "category": "Cross-Site Scripting (XSS)",
+        "file_path": "app/views/profile.js",
+        "line_number": 42,
+        "cwe_id": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+        "description": "Detected explicit unescaping of user input in Mustache template. This can lead to XSS vulnerabilities.",
+        "recommendation": "Review and fix this vulnerability",
+        "confidence": "HIGH"
+      },
+      "policy": "## POLICY IDENTIFIER\nPolicy ID: SP-2024-001\nPolicy Title: Cross-Site Scripting (XSS) Protection Policy\n\n## RISK STATEMENT\nThe organization is at risk of a Cross-Site Scripting (XSS) attack due to the explicit unescaping of user input in the Mustache template, located in app/views/profile.js (line 42). This vulnerability could allow an attacker to inject malicious code, potentially leading to unauthorized access, data theft, or disruption of services. The affected systems include the web application, and the impacted users are all those who interact with the application. If exploited, this vulnerability could result in significant reputational damage, financial loss, and compromise of sensitive data.\n\n## COMPLIANCE MAPPING\nThis policy is aligned with the following standards:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-1 (Anomaly Detection)\n- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.8.8 (Management of technical vulnerabilities), A.8.28 (Secure coding)\n- Industry standards: OWASP Top 10 (A07:2021 - Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)\n\n## POLICY REQUIREMENTS\nTo mitigate the risk of XSS attacks, the following security controls must be implemented:\n- All user input must be properly sanitized and validated before being rendered in the web application.\n- The development team must adhere to secure coding principles, including the use of template engines that automatically escape user input.\n- Success criteria include code reviews, penetration testing, and regular vulnerability scans to ensure the effectiveness of these controls.\n\n## REMEDIATION PLAN\nTo address the identified vulnerability:\n- Technical actions: Review and fix the explicit unescaping of user input in the Mustache template, ensuring all user input is properly sanitized and validated.\n- Responsible party: Security Lead\n- Timeline: 1 week\n- Verification steps: Code review, re-scan for vulnerabilities, and penetration testing to ensure the fix is effective and does not introduce new vulnerabilities.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future:\n- Implement logging and alerting for suspicious web application activity.\n- Conduct regular code reviews and security audits.\n- Utilize automated scanning tools to identify potential vulnerabilities.\n- Engage in continuous monitoring of web application security through penetration testing and vulnerability assessments."
+    },
+    {
+      "type": "SAST",
+      "vulnerability": {
+        "title": "Express Check Csurf Middleware Missing",
+        "severity": "CRITICAL",
+        "category": "Security Vulnerability",
+        "file_path": "server.js",
+        "line_number": 15,
+        "cwe_id": "CWE-352: Cross-Site Request Forgery (CSRF)",
+        "description": "CSRF protection middleware not detected. This application may be vulnerable to Cross-Site Request Forgery attacks.",
+        "recommendation": "Review and fix this vulnerability",
+        "confidence": "HIGH"
+      },
+      "policy": "**SP-2024-001: Cross-Site Request Forgery (CSRF) Protection Policy**\n====================================================================\n\n### 1. POLICY IDENTIFIER\n\n* Unique policy ID: SP-2024-001\n* Policy title: Cross-Site Request Forgery (CSRF) Protection Policy\n\n### 2. RISK STATEMENT\n\nThe absence of CSRF protection middleware in our application poses a significant risk to our business, as it may allow attackers to trick users into performing unintended actions on our web application. This could lead to unauthorized data modification, deletion, or theft, ultimately resulting in financial loss, reputational damage, and compromised user trust. The affected systems include our web application, and the impacted data/users are all users who interact with our application.\n\n### 3. COMPLIANCE MAPPING\n\nThis policy is aligned with the following compliance requirements:\n* NIST CSF: PR.DS-5 (Data Protection), DE.AE-3 (Anomaly Detection)\n* ISO 27001: A.8.23 (Web filtering), A.8.29 (Security testing in development and acceptance), A.8.8 (Management of technical vulnerabilities), A.8.26 (Application security requirements)\n* Industry standards: OWASP, CWE-352 (Cross-Site Request Forgery)\n\n### 4. POLICY REQUIREMENTS\n\nTo mitigate the risk of CSRF attacks, the following security controls must be implemented:\n* Enable CSRF protection middleware in our web application\n* Validate user requests to ensure they originate from our application\n* Implement a token-based system to verify user requests\n* Success criteria: Successful implementation of CSRF protection middleware, verified through penetration testing and code review\n* Validation methods: Regular security audits, code reviews, and penetration testing\n\n### 5. REMEDIATION PLAN\n\nTo remediate this critical vulnerability, the following actions must be taken:\n* Technical action: Enable CSRF protection middleware in our web application (server.js, line 15)\n* Responsible party: CTO\n* Timeline: 24 hours\n* Verification steps: Code review, re-scan, and penetration testing to ensure the vulnerability is fully remediated\n\n### 6. MONITORING AND DETECTION\n\nTo detect similar vulnerabilities in the future, we will:\n* Implement regular security audits and code reviews\n* Use logging and alerting tools to detect potential security incidents\n* Continuously monitor our application for signs of CSRF attacks\n* Perform regular penetration testing to identify and remediate vulnerabilities\n\nBy following this policy, we can ensure the security and integrity of our web application, protect our users' data, and maintain compliance with relevant industry standards and regulations."
+    },
+    {
+      "type": "SCA",
+      "vulnerability": {
+        "package_name": "lodash",
+        "current_version": "Unknown",
+        "vulnerable_versions": "<4.17.21",
+        "patched_version": "4.17.21",
+        "cve_id": "Prototype Pollution in lodash",
+        "severity": "HIGH",
+        "description": "Prototype Pollution in lodash",
+        "exploitability": null,
+        "fix_available": true
+      },
+      "policy": "## POLICY IDENTIFIER\nPolicy ID: SP-2024-001\nPolicy Title: Protection Against Prototype Pollution Vulnerabilities\n\n## RISK STATEMENT\nThe organization faces a significant risk due to the presence of a Prototype Pollution vulnerability in the lodash library. This vulnerability can lead to unauthorized access, data tampering, and potential intellectual property theft. If exploited, it could compromise the confidentiality, integrity, and availability of our systems and data, affecting all users and potentially damaging our reputation. The affected systems include our web applications and associated data stores.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following standards:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-1 (Anomaly Detection)\n- ISO 27001: A.5.32 (Intellectual property rights), A.8.23 (Web filtering), A.8.31 (Separation of development, test and production environments), A.8.30 (Outsourced development), A.5.10 (Acceptable use of information and other associated assets)\n- Industry Standards: OWASP A3:2021-Injection, CWE-1321: Weaknesses in Prototype Chain\n\n## POLICY REQUIREMENTS\nTo mitigate the Prototype Pollution vulnerability, the following security controls must be implemented:\n1. **Input Validation**: All user inputs must be validated and sanitized to prevent malicious data from entering our systems.\n2. **Library Updates**: Ensure that all dependencies, including lodash, are updated to the latest secure versions.\n3. **Secure Coding Practices**: Implement secure coding practices, including the use of Object.create(null) instead of objects with prototypes.\nSuccess criteria include the absence of prototype pollution vulnerabilities in code reviews and security scans. Validation will be performed through regular security audits and penetration testing.\n\n## REMEDIATION PLAN\nGiven the severity of this vulnerability (High), the following remediation plan is outlined:\n- **Technical Actions**: Update lodash to the latest version, implement input validation, and refactor code to use secure practices.\n- **Responsible Party**: Security Lead\n- **Timeline**: Completion within 1 week\n- **Verification Steps**: Code review, security scan, and penetration test to confirm the vulnerability has been successfully mitigated.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following measures will be implemented:\n- **Logging**: Enhanced logging to capture potential exploitation attempts.\n- **Alerting**: Real-time alerts for suspicious activity related to prototype pollution.\n- **Continuous Monitoring**: Regular security scans and code reviews to identify and address vulnerabilities before they can be exploited.\nBy following this policy, the organization aims to protect its intellectual property, prevent unauthorized access, and maintain the integrity and availability of its systems and data."
+    },
+    {
+      "type": "SCA",
+      "vulnerability": {
+        "package_name": "express",
+        "current_version": "Unknown",
+        "vulnerable_versions": "<4.18.0",
+        "patched_version": "4.18.2",
+        "cve_id": "Open Redirect in express",
+        "severity": "CRITICAL",
+        "description": "Open Redirect in express",
+        "exploitability": null,
+        "fix_available": true
+      },
+      "policy": "## POLICY IDENTIFIER\nPolicy ID: SP-2024-001\nPolicy Title: Open Redirect Protection Policy\n\n## RISK STATEMENT\nThe Open Redirect vulnerability in our Express application poses a significant risk to our organization. If exploited, this vulnerability could allow attackers to redirect users to malicious websites, potentially leading to phishing attacks, malware distribution, or unauthorized access to sensitive information. This could result in financial loss, reputational damage, and compromise of confidential data. All users interacting with our web application are affected, making this a high-priority issue.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following standards:\n- NIST CSF: PR.DS-5 (Data Protection), DE.AE-2 (Anomaly Detection)\n- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.5.30 (ICT readiness for business continuity)\n- Industry standards: OWASP A10:2021 (Server-Side Request Forgery), CWE-601 (URL Redirection to Untrusted Site)\n\n## POLICY REQUIREMENTS\nTo mitigate the Open Redirect vulnerability, the following security controls must be implemented:\n- Validate all user-inputted URLs to ensure they are legitimate and expected.\n- Implement a whitelist of allowed redirect URLs.\n- Use the `http-equiv` header to specify a Content Security Policy (CSP) that restricts redirecting to untrusted sites.\nSuccess criteria include:\n- No unauthorized redirects are observed during penetration testing.\n- All user-inputted URLs are validated and sanitized.\n\n## REMEDIATION PLAN\nTo remediate this critical vulnerability:\n- Technical actions: Update Express to the latest version, implement URL validation and whitelisting, and configure CSP headers.\n- Responsible party: CTO\n- Timeline: Completion within 24 hours\n- Verification steps: Conduct a code review, re-scan the application using a vulnerability scanner, and perform a penetration test to validate the fixes.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future:\n- Implement logging and alerting for all redirect requests to monitor for suspicious activity.\n- Conduct regular security audits and penetration testing to identify potential vulnerabilities.\n- Utilize a Web Application Firewall (WAF) to detect and prevent common web attacks, including Open Redirect.\nContinuous monitoring strategies include regular code reviews, automated vulnerability scanning, and security awareness training for developers to ensure secure coding practices."
+    },
+    {
+      "type": "DAST",
+      "vulnerability": {
+        "url": "http://localhost:4000/search",
+        "endpoint": "/search",
+        "method": "GET",
+        "issue_type": "Cross Site Scripting (Reflected)",
+        "risk_level": "HIGH",
+        "confidence": "2",
+        "description": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.",
+        "solution": "Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.",
+        "cwe_id": "CWE-79"
+      },
+      "policy": "## POLICY IDENTIFIER\nPolicy ID: SP-2024-001\nPolicy Title: Cross-Site Scripting (XSS) Protection Policy\n\n## RISK STATEMENT\nThe organization is at risk of Cross-Site Scripting (XSS) attacks, which could compromise the security of our web application and potentially lead to unauthorized access to sensitive data. If exploited, this vulnerability could result in the theft of user credentials, session hijacking, or the execution of malicious code on user browsers. The affected systems include our web application hosted at http://localhost:4000/search, and the impacted users are all individuals accessing this application.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.AE-2 (Anomaly Detection)\n- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.8.28 (Secure coding), A.8.29 (Security testing in development and acceptance)\n- Relevant industry standards: OWASP Top 10 (A07:2021 - Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)\n\n## POLICY REQUIREMENTS\nTo mitigate the risk of XSS attacks, the following security controls must be implemented:\n- Input validation and sanitization for all user-supplied data\n- Output encoding to prevent the injection of malicious code\n- Implementation of a Web Application Firewall (WAF) to detect and prevent XSS attacks\n- Regular security testing and code reviews to identify and address potential vulnerabilities\nSuccess criteria include the successful implementation of these controls, as validated through penetration testing and code reviews.\n\n## REMEDIATION PLAN\nTo address the identified XSS vulnerability, the following technical actions are required:\n- Conduct a thorough code review to identify and fix any input validation and sanitization issues\n- Implement output encoding for all user-supplied data\n- Configure the WAF to detect and prevent XSS attacks\nThe responsible party for this remediation is the Development Lead, with a timeline of 2 weeks for completion. Verification steps include a code review, re-scan, and penetration test to ensure the vulnerability has been successfully addressed.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the organization will implement the following monitoring and detection strategies:\n- Regular security testing and code reviews\n- Logging and alerting for suspicious web application activity\n- Continuous monitoring of the WAF for potential XSS attacks\nThese measures will ensure the early detection and remediation of XSS vulnerabilities, protecting the organization's web application and user data from potential attacks."
+    },
+    {
+      "type": "DAST",
+      "vulnerability": {
+        "url": "http://localhost:4000/profile",
+        "endpoint": "/profile",
+        "method": "POST",
+        "issue_type": "Cross Site Scripting (Persistent)",
+        "risk_level": "HIGH",
+        "confidence": "2",
+        "description": "Cross-site Scripting (XSS) is stored on the server and executed when users access affected pages.",
+        "solution": "Validate all user input and encode output properly.",
+        "cwe_id": "CWE-79"
+      },
+      "policy": "## POLICY IDENTIFIER\nPolicy ID: SP-2024-001\nPolicy Title: Cross-Site Scripting (XSS) Protection Policy\n\n## RISK STATEMENT\nThe Cross-Site Scripting (XSS) vulnerability poses a significant risk to our organization, as it allows attackers to inject malicious scripts into our web application, potentially leading to unauthorized access, data theft, or disruption of services. If exploited, this vulnerability could compromise sensitive user data, damage our reputation, and result in financial losses. The affected systems include our web application hosted at http://localhost:4000/profile, and the impacted users are all individuals accessing this page.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.AE-2 (Anomaly Detection)\n- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.8.1 (User endpoint devices), A.8.15 (Logging), A.8.4 (Access to source code), A.5.37 (Documented operating procedures)\n- Industry standards: OWASP Top 10 (A07:2021 - Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)\n\n## POLICY REQUIREMENTS\nTo mitigate the XSS vulnerability, the following security controls must be implemented:\n- Input validation and sanitization for all user-input data\n- Output encoding to prevent malicious script injection\n- Regular security testing and code reviews to identify and address potential vulnerabilities\n- Implementation of a Web Application Firewall (WAF) to detect and prevent XSS attacks\nSuccess criteria include:\n- No detected XSS vulnerabilities in regular security scans\n- Successful penetration testing without identifying XSS weaknesses\nValidation methods include code reviews, security scans, and penetration testing.\n\n## REMEDIATION PLAN\nTo address the identified XSS vulnerability, the following technical actions are required:\n- Update the web application to include input validation and sanitization\n- Implement output encoding for all user-generated content\n- Configure the WAF to detect and prevent XSS attacks\nThe responsible party for this remediation is the Development Lead. The timeline for completion is 2 weeks. Verification steps include a code review, re-scan, and penetration test to ensure the vulnerability is fully addressed.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, we will implement the following:\n- Regular security scans and penetration testing\n- Logging and alerting for suspicious web application activity\n- Continuous monitoring of web application traffic for signs of XSS attacks\nThis will enable us to identify and address potential vulnerabilities before they can be exploited, ensuring the security and integrity of our web application and user data."
+    }
+  ],
+  "llama-3.1-70b-versatile": [
+    {
+      "type": "SAST",
+      "vulnerability": {
+        "title": "Explicit Unescape",
+        "severity": "HIGH",
+        "category": "Cross-Site Scripting (XSS)",
+        "file_path": "app/views/profile.js",
+        "line_number": 42,
+        "cwe_id": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+        "description": "Detected explicit unescaping of user input in Mustache template. This can lead to XSS vulnerabilities.",
+        "recommendation": "Review and fix this vulnerability",
+        "confidence": "HIGH"
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    },
+    {
+      "type": "SAST",
+      "vulnerability": {
+        "title": "Express Check Csurf Middleware Missing",
+        "severity": "CRITICAL",
+        "category": "Security Vulnerability",
+        "file_path": "server.js",
+        "line_number": 15,
+        "cwe_id": "CWE-352: Cross-Site Request Forgery (CSRF)",
+        "description": "CSRF protection middleware not detected. This application may be vulnerable to Cross-Site Request Forgery attacks.",
+        "recommendation": "Review and fix this vulnerability",
+        "confidence": "HIGH"
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    },
+    {
+      "type": "SCA",
+      "vulnerability": {
+        "package_name": "lodash",
+        "current_version": "Unknown",
+        "vulnerable_versions": "<4.17.21",
+        "patched_version": "4.17.21",
+        "cve_id": "Prototype Pollution in lodash",
+        "severity": "HIGH",
+        "description": "Prototype Pollution in lodash",
+        "exploitability": null,
+        "fix_available": true
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    },
+    {
+      "type": "SCA",
+      "vulnerability": {
+        "package_name": "express",
+        "current_version": "Unknown",
+        "vulnerable_versions": "<4.18.0",
+        "patched_version": "4.18.2",
+        "cve_id": "Open Redirect in express",
+        "severity": "CRITICAL",
+        "description": "Open Redirect in express",
+        "exploitability": null,
+        "fix_available": true
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    },
+    {
+      "type": "DAST",
+      "vulnerability": {
+        "url": "http://localhost:4000/search",
+        "endpoint": "/search",
+        "method": "GET",
+        "issue_type": "Cross Site Scripting (Reflected)",
+        "risk_level": "HIGH",
+        "confidence": "2",
+        "description": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.",
+        "solution": "Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.",
+        "cwe_id": "CWE-79"
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    },
+    {
+      "type": "DAST",
+      "vulnerability": {
+        "url": "http://localhost:4000/profile",
+        "endpoint": "/profile",
+        "method": "POST",
+        "issue_type": "Cross Site Scripting (Persistent)",
+        "risk_level": "HIGH",
+        "confidence": "2",
+        "description": "Cross-site Scripting (XSS) is stored on the server and executed when users access affected pages.",
+        "solution": "Validate all user input and encode output properly.",
+        "cwe_id": "CWE-79"
+      },
+      "policy": "ERROR: Failed to generate policy - Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}",
+      "error": "Groq API Error: Error code: 400 - {'error': {'message': 'The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}}"
+    }
+  ]
+}
