@@ -51,6 +51,11 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/juice-shop/juice-shop.git test-app
 
+      - name: Install Juice Shop dependencies
+        run: |
+          cd test-app
+          npm install --package-lock-only
+
       - name: Run npm audit SCA scan on Juice Shop
         run: |
           cd test-app
