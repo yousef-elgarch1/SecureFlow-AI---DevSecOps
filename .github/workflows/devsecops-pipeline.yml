@@ -102,7 +102,9 @@ jobs:
           python -c "
           from backend.parsers.sast_parser import SASTParser
           parser = SASTParser()
-          vulns = parser.parse('sast_report.json')
+          with open('sast_report.json', 'r') as f:
+              content = f.read()
+          vulns = parser.parse(content)
           print(f'Parsed {len(vulns)} SAST vulnerabilities')
           "
 
@@ -132,7 +134,9 @@ jobs:
           python -c "
           from backend.parsers.sca_parser import SCAParser
           parser = SCAParser()
-          vulns = parser.parse('sca_report.json')
+          with open('sca_report.json', 'r', encoding='utf-8-sig') as f:
+              content = f.read()
+          vulns = parser.parse(content)
           print(f'Parsed {len(vulns)} SCA vulnerabilities')
           "
 
@@ -162,7 +166,9 @@ jobs:
           python -c "
           from backend.parsers.dast_parser import DASTParser
           parser = DASTParser()
-          vulns = parser.parse('dast_report.xml')
+          with open('dast_report.xml', 'r') as f:
+              content = f.read()
+          vulns = parser.parse(content)
           print(f'Parsed {len(vulns)} DAST vulnerabilities')
           "
 
@@ -234,7 +240,9 @@ jobs:
           from backend.prompts.policy_templates import PolicyTemplates
 
           parser = SASTParser()
-          vulns = parser.parse('sast_report.json')
+          with open('sast_report.json', 'r') as f:
+              content = f.read()
+          vulns = parser.parse(content)
 
           client = GroqClient()
           templates = PolicyTemplates()
@@ -274,7 +282,9 @@ jobs:
           from backend.prompts.policy_templates import PolicyTemplates
 
           parser = SCAParser()
-          vulns = parser.parse('sca_report.json')
+          with open('sca_report.json', 'r', encoding='utf-8-sig') as f:
+              content = f.read()
+          vulns = parser.parse(content)
 
           client = GroqClient()
           templates = PolicyTemplates()
@@ -314,7 +324,9 @@ jobs:
           from backend.prompts.policy_templates import PolicyTemplates
 
           parser = DASTParser()
-          vulns = parser.parse('dast_report.xml')
+          with open('dast_report.xml', 'r') as f:
+              content = f.read()
+          vulns = parser.parse(content)
 
           client = GroqClient()
           templates = PolicyTemplates()
