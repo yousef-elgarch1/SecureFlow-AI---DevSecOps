@@ -51,15 +51,13 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/juice-shop/juice-shop.git test-app
 
-      - name: Install Juice Shop dependencies
-        run: |
-          cd test-app
-          npm install --package-lock-only
-
       - name: Run npm audit SCA scan on Juice Shop
         run: |
           cd test-app
-          npm audit --json > ../sca_report.json || echo '{"vulnerabilities": {}}' > ../sca_report.json
+          npm audit --json > ../sca_report.json 2>&1 || true
+          if [ ! -s ../sca_report.json ]; then
+            echo '{"vulnerabilities": {}}' > ../sca_report.json
+          fi
 
       - name: Upload SCA report
         uses: actions/upload-artifact@v4
@@ -467,19 +465,104 @@ jobs:
   # ============================================================================
 
   post-summary:
-    name: "PHASE 8: Post Pipeline Summary"
+    name: "PHASE 8: Post Pipeline Summary and HTML Report"
     needs: security-gate
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download generated policies
+        uses: actions/download-artifact@v4
+        with:
+          name: security-policies
+
+      - name: Generate HTML report
+        run: |
+          python -c "
+          import os
+          import glob
+          from datetime import datetime
+
+          # Find the policy text file
+          policy_files = glob.glob('outputs/security_policy_*.txt')
+          if not policy_files:
+              print('No policy file found')
+              exit(0)
+
+          policy_file = policy_files[0]
+
+          # Read policy content
+          with open(policy_file, 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          # Generate HTML
+          html = '''<!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset=\"UTF-8\">
+              <title>AI-Powered Security Policy Report</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                  .container { max-width: 1200px; margin: 0 auto; background: white; padding: 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                  h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                  h2 { color: #34495e; margin-top: 30px; }
+                  .policy { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #3498db; }
+                  .severity-high { border-left-color: #e74c3c; }
+                  .severity-medium { border-left-color: #f39c12; }
+                  .severity-low { border-left-color: #27ae60; }
+                  pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
+                  .badge { display: inline-block; padding: 5px 10px; border-radius: 3px; font-weight: bold; margin-right: 10px; }
+                  .badge-high { background: #e74c3c; color: white; }
+                  .badge-medium { background: #f39c12; color: white; }
+                  .badge-low { background: #27ae60; color: white; }
+                  .stats { display: flex; justify-content: space-around; margin: 30px 0; }
+                  .stat-box { text-align: center; padding: 20px; background: #3498db; color: white; border-radius: 8px; flex: 1; margin: 0 10px; }
+                  .stat-number { font-size: 36px; font-weight: bold; }
+              </style>
+          </head>
+          <body>
+              <div class=\"container\">
+                  <h1>AI-Powered Security Policy Report</h1>
+                  <p><strong>Generated:</strong> ''' + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '''</p>
+                  <pre>''' + content.replace('<', '&lt;').replace('>', '&gt;') + '''</pre>
+              </div>
+          </body>
+          </html>'''
+
+          # Write HTML file
+          html_file = policy_file.replace('.txt', '.html')
+          with open(html_file, 'w', encoding='utf-8') as f:
+              f.write(html)
+
+          print(f'Generated HTML report: {html_file}')
+          "
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-policies-html
+          path: outputs/security_policy_*.html
+          retention-days: 90
+
       - name: Pipeline completion summary
         run: |
           echo "## AI-Powered DevSecOps Pipeline Complete"
           echo ""
           echo "### Phase 1: Security Scanning - Completed"
-          echo "- SAST using Semgrep"
-          echo "- SCA using npm audit"
-          echo "- DAST using OWASP ZAP"
+          echo "- SAST using Semgrep on OWASP Juice Shop"
+          echo "- SCA using npm audit on Juice Shop dependencies"
+          echo "- DAST using sample ZAP data"
           echo ""
           echo "### Phase 2: Parsing and Extraction - Completed"
           echo "- backend/parsers/sast_parser.py"
@@ -507,3 +590,5 @@ jobs:
           echo "### Phase 7: Security Gate - Passed"
           echo ""
           echo "### Phase 8: Reporting - Completed"
+          echo "- TXT report: security_policy_*.txt"
+          echo "- HTML report: security_policy_*.html"
