@@ -1,0 +1,253 @@
+{
+  "vulnerabilities": {
+    "lodash": [
+      {
+        "title": "Prototype Pollution in lodash",
+        "severity": "high",
+        "via": ["lodash"],
+        "effects": [],
+        "range": "<=4.17.20",
+        "nodes": ["node_modules/lodash"],
+        "fixAvailable": {
+          "name": "lodash",
+          "version": "4.17.21",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-1321"],
+        "url": "https://github.com/advisories/GHSA-35jh-r3h4-6jhm",
+        "findings": [
+          {
+            "version": "4.17.19",
+            "paths": ["lodash"]
+          }
+        ]
+      }
+    ],
+    "express": [
+      {
+        "title": "Open Redirect in express",
+        "severity": "medium",
+        "via": ["express"],
+        "effects": [],
+        "range": "<4.19.2",
+        "nodes": ["node_modules/express"],
+        "fixAvailable": {
+          "name": "express",
+          "version": "4.19.2",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-601"],
+        "url": "https://github.com/advisories/GHSA-rv95-896h-c2vc",
+        "findings": [
+          {
+            "version": "4.17.1",
+            "paths": ["express"]
+          }
+        ]
+      }
+    ],
+    "axios": [
+      {
+        "title": "Server-Side Request Forgery in axios",
+        "severity": "high",
+        "via": ["axios"],
+        "effects": [],
+        "range": ">=0.8.1 <1.6.0",
+        "nodes": ["node_modules/axios"],
+        "fixAvailable": {
+          "name": "axios",
+          "version": "1.6.0",
+          "isSemVerMajor": true
+        },
+        "cwe": ["CWE-918"],
+        "url": "https://github.com/advisories/GHSA-wf5p-g6vw-rhxx",
+        "findings": [
+          {
+            "version": "0.21.1",
+            "paths": ["axios"]
+          }
+        ]
+      }
+    ],
+    "jsonwebtoken": [
+      {
+        "title": "jsonwebtoken has insecure default key size",
+        "severity": "medium",
+        "via": ["jsonwebtoken"],
+        "effects": [],
+        "range": "<=8.5.1",
+        "nodes": ["node_modules/jsonwebtoken"],
+        "fixAvailable": {
+          "name": "jsonwebtoken",
+          "version": "9.0.0",
+          "isSemVerMajor": true
+        },
+        "cwe": ["CWE-327"],
+        "url": "https://github.com/advisories/GHSA-8cf7-32gw-wr33",
+        "findings": [
+          {
+            "version": "8.5.1",
+            "paths": ["jsonwebtoken"]
+          }
+        ]
+      }
+    ],
+    "minimist": [
+      {
+        "title": "Prototype Pollution in minimist",
+        "severity": "critical",
+        "via": ["minimist"],
+        "effects": ["mocha"],
+        "range": "<1.2.6",
+        "nodes": ["node_modules/minimist"],
+        "fixAvailable": {
+          "name": "mocha",
+          "version": "10.0.0",
+          "isSemVerMajor": true
+        },
+        "cwe": ["CWE-1321"],
+        "url": "https://github.com/advisories/GHSA-xvch-5gv4-984h",
+        "findings": [
+          {
+            "version": "1.2.5",
+            "paths": ["mocha>minimist"]
+          }
+        ]
+      }
+    ],
+    "qs": [
+      {
+        "title": "qs vulnerable to Prototype Pollution",
+        "severity": "high",
+        "via": ["qs"],
+        "effects": ["express"],
+        "range": "<=6.10.4",
+        "nodes": ["node_modules/qs"],
+        "fixAvailable": {
+          "name": "express",
+          "version": "4.19.2",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-1321"],
+        "url": "https://github.com/advisories/GHSA-hrpp-h998-j3pp",
+        "findings": [
+          {
+            "version": "6.9.1",
+            "paths": ["express>qs"]
+          }
+        ]
+      }
+    ],
+    "semver": [
+      {
+        "title": "semver vulnerable to Regular Expression Denial of Service",
+        "severity": "medium",
+        "via": ["semver"],
+        "effects": [],
+        "range": ">=7.0.0 <7.5.2",
+        "nodes": ["node_modules/semver"],
+        "fixAvailable": {
+          "name": "semver",
+          "version": "7.5.2",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-1333"],
+        "url": "https://github.com/advisories/GHSA-c2qf-rxjj-qqgw",
+        "findings": [
+          {
+            "version": "7.3.5",
+            "paths": ["semver"]
+          }
+        ]
+      }
+    ],
+    "sqlite3": [
+      {
+        "title": "SQL Injection in sqlite3",
+        "severity": "critical",
+        "via": ["sqlite3"],
+        "effects": [],
+        "range": "<5.1.5",
+        "nodes": ["node_modules/sqlite3"],
+        "fixAvailable": {
+          "name": "sqlite3",
+          "version": "5.1.5",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-89"],
+        "url": "https://github.com/advisories/GHSA-aW5q-3h4x-7p9x",
+        "findings": [
+          {
+            "version": "5.0.2",
+            "paths": ["sqlite3"]
+          }
+        ]
+      }
+    ],
+    "xml2js": [
+      {
+        "title": "xml2js is vulnerable to prototype pollution",
+        "severity": "medium",
+        "via": ["xml2js"],
+        "effects": [],
+        "range": "<0.5.0",
+        "nodes": ["node_modules/xml2js"],
+        "fixAvailable": {
+          "name": "xml2js",
+          "version": "0.5.0",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-1321"],
+        "url": "https://github.com/advisories/GHSA-776f-qx25-q3cc",
+        "findings": [
+          {
+            "version": "0.4.23",
+            "paths": ["xml2js"]
+          }
+        ]
+      }
+    ],
+    "node-fetch": [
+      {
+        "title": "node-fetch is vulnerable to SSRF",
+        "severity": "high",
+        "via": ["node-fetch"],
+        "effects": [],
+        "range": "<2.6.7",
+        "nodes": ["node_modules/node-fetch"],
+        "fixAvailable": {
+          "name": "node-fetch",
+          "version": "2.6.7",
+          "isSemVerMajor": false
+        },
+        "cwe": ["CWE-918"],
+        "url": "https://github.com/advisories/GHSA-r683-j2x4-v87g",
+        "findings": [
+          {
+            "version": "2.6.1",
+            "paths": ["node-fetch"]
+          }
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 4,
+      "high": 5,
+      "critical": 2,
+      "total": 11
+    },
+    "dependencies": {
+      "prod": 156,
+      "dev": 234,
+      "optional": 12,
+      "peer": 3,
+      "peerOptional": 0,
+      "total": 405
+    }
+  },
+  "auditReportVersion": 2
+}

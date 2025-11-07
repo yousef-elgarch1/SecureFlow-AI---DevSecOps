@@ -1,0 +1,222 @@
+{
+  "results": [
+    {
+      "check_id": "javascript.lang.security.audit.sqli.node-sqli",
+      "path": "src/controllers/UserController.js",
+      "start": {
+        "line": 45,
+        "col": 5
+      },
+      "end": {
+        "line": 47,
+        "col": 6
+      },
+      "extra": {
+        "message": "Detected possible SQL injection. User input is used to construct a SQL query without parameterization or escaping. This could lead to SQL injection if variables in the SQL statement are not properly sanitized.",
+        "metadata": {
+          "owasp": "A03:2021 - Injection",
+          "cwe": "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+          "category": "security",
+          "technology": ["javascript"],
+          "confidence": "HIGH",
+          "likelihood": "HIGH",
+          "impact": "HIGH",
+          "subcategory": ["vuln"]
+        },
+        "severity": "ERROR",
+        "lines": "const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;\nconst result = await db.query(query);"
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.xss.mustache.var-in-href",
+      "path": "src/views/profile.mustache",
+      "start": {
+        "line": 23,
+        "col": 8
+      },
+      "end": {
+        "line": 23,
+        "col": 45
+      },
+      "extra": {
+        "message": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross-site scripting (XSS) attacks.",
+        "metadata": {
+          "owasp": "A03:2021 - Injection",
+          "cwe": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+          "category": "security",
+          "technology": ["express", "javascript"],
+          "confidence": "MEDIUM",
+          "likelihood": "MEDIUM",
+          "impact": "MEDIUM",
+          "subcategory": ["vuln"]
+        },
+        "severity": "WARNING",
+        "lines": "<a href=\"{{userWebsite}}\">Visit Website</a>"
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal",
+      "path": "src/routes/files.js",
+      "start": {
+        "line": 67,
+        "col": 10
+      },
+      "end": {
+        "line": 67,
+        "col": 52
+      },
+      "extra": {
+        "message": "Detected a possible path traversal vulnerability. User input is used to construct a file path without proper sanitization. An attacker could potentially access files outside the intended directory.",
+        "metadata": {
+          "owasp": "A01:2021 - Broken Access Control",
+          "cwe": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+          "category": "security",
+          "technology": ["javascript", "express"],
+          "confidence": "HIGH",
+          "likelihood": "HIGH",
+          "impact": "HIGH",
+          "subcategory": ["vuln"]
+        },
+        "severity": "ERROR",
+        "lines": "const filePath = path.join(__dirname, 'uploads', req.params.filename);"
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-cookie-session-no-httponly",
+      "path": "src/config/session.js",
+      "start": {
+        "line": 12,
+        "col": 1
+      },
+      "end": {
+        "line": 18,
+        "col": 3
+      },
+      "extra": {
+        "message": "Cookie session detected without 'httpOnly' flag. This could lead to session hijacking via XSS attacks as JavaScript can access the cookie.",
+        "metadata": {
+          "owasp": "A05:2021 - Security Misconfiguration",
+          "cwe": "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag",
+          "category": "security",
+          "technology": ["express", "javascript"],
+          "confidence": "HIGH",
+          "likelihood": "MEDIUM",
+          "impact": "MEDIUM",
+          "subcategory": ["vuln"]
+        },
+        "severity": "WARNING",
+        "lines": "app.use(session({\n  secret: 'keyboard cat',\n  resave: false,\n  saveUninitialized: true,\n  cookie: { secure: true }\n}));"
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.hardcoded-secret",
+      "path": "src/config/auth.js",
+      "start": {
+        "line": 8,
+        "col": 1
+      },
+      "end": {
+        "line": 8,
+        "col": 62
+      },
+      "extra": {
+        "message": "Hardcoded secret detected. Secrets should be stored in environment variables or a secure secret management system, not directly in code.",
+        "metadata": {
+          "owasp": "A02:2021 - Cryptographic Failures",
+          "cwe": "CWE-798: Use of Hard-coded Credentials",
+          "category": "security",
+          "technology": ["javascript"],
+          "confidence": "HIGH",
+          "likelihood": "LOW",
+          "impact": "CRITICAL",
+          "subcategory": ["vuln"]
+        },
+        "severity": "ERROR",
+        "lines": "const JWT_SECRET = 'super-secret-key-12345-do-not-share';"
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-vm2-code-injection",
+      "path": "src/utils/sandbox.js",
+      "start": {
+        "line": 34,
+        "col": 5
+      },
+      "end": {
+        "line": 36,
+        "col": 6
+      },
+      "extra": {
+        "message": "User input is used in a VM context without proper sanitization. This could lead to code injection and arbitrary code execution.",
+        "metadata": {
+          "owasp": "A03:2021 - Injection",
+          "cwe": "CWE-94: Improper Control of Generation of Code ('Code Injection')",
+          "category": "security",
+          "technology": ["javascript"],
+          "confidence": "HIGH",
+          "likelihood": "HIGH",
+          "impact": "CRITICAL",
+          "subcategory": ["vuln"]
+        },
+        "severity": "ERROR",
+        "lines": "const vm = new VM();\nconst result = vm.run(userProvidedCode);"
+      }
+    },
+    {
+      "check_id": "javascript.express.security.audit.express-open-redirect",
+      "path": "src/controllers/RedirectController.js",
+      "start": {
+        "line": 19,
+        "col": 5
+      },
+      "end": {
+        "line": 19,
+        "col": 38
+      },
+      "extra": {
+        "message": "Detected possible open redirect. User input is used to construct a redirect URL without validation. This could be used in phishing attacks.",
+        "metadata": {
+          "owasp": "A01:2021 - Broken Access Control",
+          "cwe": "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')",
+          "category": "security",
+          "technology": ["express", "javascript"],
+          "confidence": "MEDIUM",
+          "likelihood": "MEDIUM",
+          "impact": "LOW",
+          "subcategory": ["vuln"]
+        },
+        "severity": "WARNING",
+        "lines": "res.redirect(req.query.returnUrl);"
+      }
+    },
+    {
+      "check_id": "javascript.lang.security.audit.crypto-random-insufficient-entropy",
+      "path": "src/utils/token.js",
+      "start": {
+        "line": 56,
+        "col": 10
+      },
+      "end": {
+        "line": 56,
+        "col": 47
+      },
+      "extra": {
+        "message": "Math.random() is not cryptographically secure and should not be used for security-sensitive operations. Use crypto.randomBytes() instead.",
+        "metadata": {
+          "owasp": "A02:2021 - Cryptographic Failures",
+          "cwe": "CWE-330: Use of Insufficiently Random Values",
+          "category": "security",
+          "technology": ["javascript"],
+          "confidence": "HIGH",
+          "likelihood": "MEDIUM",
+          "impact": "MEDIUM",
+          "subcategory": ["vuln"]
+        },
+        "severity": "WARNING",
+        "lines": "const token = Math.random().toString(36).substring(2);"
+      }
+    }
+  ],
+  "errors": [],
+  "version": "1.52.0"
+}

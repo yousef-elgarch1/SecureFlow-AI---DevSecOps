@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OWASPZAPReport version="2.14.0" generated="Thu, 31 Oct 2024 14:30:22">
+  <site name="http://testapp.local:3000" host="testapp.local" port="3000" ssl="false">
+
+    <alerts>
+      <!-- SQL Injection Alert -->
+      <alertitem>
+        <pluginid>40018</pluginid>
+        <alertRef>40018</alertRef>
+        <alert>SQL Injection</alert>
+        <name>SQL Injection</name>
+        <riskcode>3</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>High (Medium)</riskdesc>
+        <desc>SQL injection may be possible. The following SQL injection was detected: OR 1=1--</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/api/users/search</uri>
+            <method>GET</method>
+            <param>query</param>
+            <attack>query=test' OR '1'='1</attack>
+            <evidence>You have an error in your SQL syntax</evidence>
+            <otherinfo>The page results were successfully manipulated using the boolean conditions [OR 1=1] and [AND 1=2]</otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Do not trust client side input, even if there is client side validation in place. In general, type check all data on the server side and escape all data received from the client. Avoid building SQL queries using string concatenation. Use prepared statements with parameterized queries instead.</solution>
+        <otherinfo>The page results were successfully manipulated using the boolean conditions [OR 1=1] and [AND 1=2]</otherinfo>
+        <reference>
+          <![CDATA[https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html]]>
+        </reference>
+        <cweid>89</cweid>
+        <wascid>19</wascid>
+        <sourceid>3</sourceid>
+      </alertitem>
+
+      <!-- XSS Alert -->
+      <alertitem>
+        <pluginid>40012</pluginid>
+        <alertRef>40012</alertRef>
+        <alert>Cross Site Scripting (Reflected)</alert>
+        <name>Cross Site Scripting (Reflected)</name>
+        <riskcode>3</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>High (Medium)</riskdesc>
+        <desc>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/search</uri>
+            <method>GET</method>
+            <param>q</param>
+            <attack>&lt;script&gt;alert(1)&lt;/script&gt;</attack>
+            <evidence>&lt;script&gt;alert(1)&lt;/script&gt;</evidence>
+            <otherinfo>User-controlled input was reflected in the response without proper encoding</otherinfo>
+          </instance>
+          <instance>
+            <uri>http://testapp.local:3000/profile</uri>
+            <method>POST</method>
+            <param>bio</param>
+            <attack>&lt;img src=x onerror=alert(1)&gt;</attack>
+            <evidence>&lt;img src=x onerror=alert(1)&gt;</evidence>
+            <otherinfo>Stored XSS detected in user profile bio field</otherinfo>
+          </instance>
+        </instances>
+        <count>2</count>
+        <solution>Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid. Phase: Implementation - Ensure all input is validated, filtered, and sanitized. Convert special characters to HTML entities.</solution>
+        <reference>
+          <![CDATA[https://owasp.org/www-community/attacks/xss/]]>
+        </reference>
+        <cweid>79</cweid>
+        <wascid>8</wascid>
+        <sourceid>1</sourceid>
+      </alertitem>
+
+      <!-- CSRF Alert -->
+      <alertitem>
+        <pluginid>10202</pluginid>
+        <alertRef>10202</alertRef>
+        <alert>Absence of Anti-CSRF Tokens</alert>
+        <name>Absence of Anti-CSRF Tokens</name>
+        <riskcode>2</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>Medium (Medium)</riskdesc>
+        <desc>No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/api/profile/update</uri>
+            <method>POST</method>
+            <param>N/A</param>
+            <attack></attack>
+            <evidence>&lt;form action="/api/profile/update" method="POST"&gt;</evidence>
+            <otherinfo>No known Anti-CSRF token [anticsrf, CSRFToken, __RequestVerificationToken, csrfmiddlewaretoken, authenticity_token, OWASP_CSRFTOKEN, anoncsrf, csrf_token, _csrf, _csrfSecret, __csrf_magic, CSRF, _token, _csrf_token] was found in the following HTML form: [Form 1: "username" "email" "password" ].</otherinfo>
+          </instance>
+          <instance>
+            <uri>http://testapp.local:3000/api/settings</uri>
+            <method>POST</method>
+            <param>N/A</param>
+            <attack></attack>
+            <evidence>&lt;form action="/api/settings" method="POST"&gt;</evidence>
+            <otherinfo>No known Anti-CSRF token was found in settings form</otherinfo>
+          </instance>
+        </instances>
+        <count>2</count>
+        <solution>Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation - Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.</solution>
+        <reference>
+          <![CDATA[https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html]]>
+        </reference>
+        <cweid>352</cweid>
+        <wascid>9</wascid>
+        <sourceid>1</sourceid>
+      </alertitem>
+
+      <!-- Insecure Authentication Alert -->
+      <alertitem>
+        <pluginid>10105</pluginid>
+        <alertRef>10105</alertRef>
+        <alert>Weak Authentication Method</alert>
+        <name>Weak Authentication Method</name>
+        <riskcode>2</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>Medium (Medium)</riskdesc>
+        <desc>HTTP basic or digest authentication has been used over an unsecured connection. The credentials can be read and then reused by someone with access to the network.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/api/login</uri>
+            <method>POST</method>
+            <param>Authorization</param>
+            <attack></attack>
+            <evidence>Authorization: Basic dXNlcjpwYXNz</evidence>
+            <otherinfo>Basic authentication credentials transmitted over HTTP</otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Protect the connection using HTTPS or use a stronger authentication mechanism</solution>
+        <reference>
+          <![CDATA[https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html]]>
+        </reference>
+        <cweid>287</cweid>
+        <wascid>1</wascid>
+        <sourceid>3</sourceid>
+      </alertitem>
+
+      <!-- Sensitive Data Exposure Alert -->
+      <alertitem>
+        <pluginid>10029</pluginid>
+        <alertRef>10029</alertRef>
+        <alert>Cookie Without Secure Flag</alert>
+        <name>Cookie Without Secure Flag</name>
+        <riskcode>1</riskcode>
+        <confidence>3</confidence>
+        <riskdesc>Low (High)</riskdesc>
+        <desc>A cookie has been set without the secure flag, which means that the cookie can be accessed via unencrypted connections.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/</uri>
+            <method>GET</method>
+            <param>session_id</param>
+            <attack></attack>
+            <evidence>Set-Cookie: session_id=abc123; Path=/; HttpOnly</evidence>
+            <otherinfo>The cookie does not have the secure flag set</otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Whenever a cookie contains sensitive information or is a session token, then it should always be passed using an encrypted channel. Ensure that the secure flag is set for cookies containing such sensitive information.</solution>
+        <reference>
+          <![CDATA[https://owasp.org/www-community/controls/SecureCookieAttribute]]>
+        </reference>
+        <cweid>614</cweid>
+        <wascid>13</wascid>
+        <sourceid>3</sourceid>
+      </alertitem>
+
+      <!-- Security Misconfiguration Alert -->
+      <alertitem>
+        <pluginid>10021</pluginid>
+        <alertRef>10021</alertRef>
+        <alert>X-Content-Type-Options Header Missing</alert>
+        <name>X-Content-Type-Options Header Missing</name>
+        <riskcode>1</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>Low (Medium)</riskdesc>
+        <desc>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/api/data</uri>
+            <method>GET</method>
+            <param>X-Content-Type-Options</param>
+            <attack></attack>
+            <evidence></evidence>
+            <otherinfo>This issue still applies to error type pages (401, 403, 500, etc.) as those pages are often still affected by injection issues.</otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.</solution>
+        <reference>
+          <![CDATA[https://owasp.org/www-community/Security_Headers]]>
+        </reference>
+        <cweid>693</cweid>
+        <wascid>15</wascid>
+        <sourceid>3</sourceid>
+      </alertitem>
+
+      <!-- Information Disclosure Alert -->
+      <alertitem>
+        <pluginid>10037</pluginid>
+        <alertRef>10037</alertRef>
+        <alert>Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)</alert>
+        <name>Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)</name>
+        <riskcode>1</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>Low (Medium)</riskdesc>
+        <desc>The web/application server is leaking information via one or more "X-Powered-By" HTTP response headers. Access to such information may facilitate attackers identifying other frameworks/components your web application is reliant upon.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/</uri>
+            <method>GET</method>
+            <param></param>
+            <attack></attack>
+            <evidence>X-Powered-By: Express</evidence>
+            <otherinfo></otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Ensure that your web server, application server, load balancer, etc. is configured to suppress "X-Powered-By" headers.</solution>
+        <reference>
+          <![CDATA[https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/01-Information_Gathering/08-Fingerprint_Web_Application_Framework]]>
+        </reference>
+        <cweid>200</cweid>
+        <wascid>13</wascid>
+        <sourceid>3</sourceid>
+      </alertitem>
+
+      <!-- Path Traversal Alert -->
+      <alertitem>
+        <pluginid>6</pluginid>
+        <alertRef>6</alertRef>
+        <alert>Path Traversal</alert>
+        <name>Path Traversal</name>
+        <riskcode>3</riskcode>
+        <confidence>2</confidence>
+        <riskdesc>High (Medium)</riskdesc>
+        <desc>The Path Traversal attack technique allows an attacker access to files, directories, and commands that potentially reside outside the web document root directory.</desc>
+        <instances>
+          <instance>
+            <uri>http://testapp.local:3000/api/download</uri>
+            <method>GET</method>
+            <param>file</param>
+            <attack>file=../../../../etc/passwd</attack>
+            <evidence>root:x:0:0:root:/root:/bin/bash</evidence>
+            <otherinfo>Path traversal detected - application did not properly sanitize file path</otherinfo>
+          </instance>
+        </instances>
+        <count>1</count>
+        <solution>Assume all input is malicious. Avoid using user input directly in file system operations. Use a whitelist of acceptable inputs. Use chrooted jails and code access policies to restrict where the files can be obtained or saved to.</solution>
+        <reference>
+          <![CDATA[https://owasp.org/www-community/attacks/Path_Traversal]]>
+        </reference>
+        <cweid>22</cweid>
+        <wascid>33</wascid>
+        <sourceid>1</sourceid>
+      </alertitem>
+
+    </alerts>
+  </site>
+</OWASPZAPReport>
