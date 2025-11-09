@@ -752,7 +752,7 @@ We would like to thank the following organizations and projects:
 - ELGARCH Youssef: [GitHub](https://github.com/yousef-elgarch1)
 - IBNOU-KADY Nisrine: [GitHub](https://github.com/nisrine2002)
 
-**🌐 Live Demo**: [Coming Soon]
+**🎥 Live Demo Video**: [Watch Full Demo on Google Drive](https://drive.google.com/file/d/1gVK_jsrRc3r4ffELxm3WG67QXbazgvCs/view?usp=sharing)
 
 ---
 
