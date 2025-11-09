@@ -85,51 +85,68 @@ class SCAParser:
 
         vulns_data = data.get('vulnerabilities', {})
 
-        for package_name, vuln_info in vulns_data.items():
+        for package_name, vuln_info_or_array in vulns_data.items():
             try:
-                # Get severity
-                severity = self._normalize_severity(vuln_info.get('severity', 'MEDIUM'))
+                # Handle both single object and array formats
+                vuln_list = vuln_info_or_array if isinstance(vuln_info_or_array, list) else [vuln_info_or_array]
 
-                # Get CVE/advisory info from 'via' array
-                via_list = vuln_info.get('via', [])
+                for vuln_info in vuln_list:
+                    # Get severity
+                    severity = self._normalize_severity(vuln_info.get('severity', 'MEDIUM'))
 
-                # Extract details from first advisory
-                cve_id = 'N/A'
-                description = 'No description available'
-                vulnerable_range = vuln_info.get('range', 'Unknown')
+                    # Get CVE/advisory info
+                    cve_id = 'N/A'
+                    description = vuln_info.get('title', 'No description available')
 
-                if via_list and isinstance(via_list[0], dict):
-                    advisory = via_list[0]
-                    cve_id = advisory.get('title', f"Advisory {advisory.get('source', 'N/A')}")
-                    description = advisory.get('title', 'No description')
-                    if 'range' in advisory:
-                        vulnerable_range = advisory['range']
+                    # Try to get CWE if available
+                    if 'cwe' in vuln_info and vuln_info['cwe']:
+                        cwe_list = vuln_info['cwe']
+                        if isinstance(cwe_list, list) and cwe_list:
+                            cve_id = cwe_list[0]
 
-                # Get fix information
-                fix_available = False
-                patched_version = None
-                fix_info = vuln_info.get('fixAvailable', {})
+                    # Get URL as additional info
+                    if 'url' in vuln_info:
+                        # Extract advisory ID from URL if no CWE
+                        if cve_id == 'N/A':
+                            url = vuln_info['url']
+                            if 'GHSA-' in url:
+                                cve_id = url.split('GHSA-')[1].split('/')[0]
+                                cve_id = f"GHSA-{cve_id}"
 
-                if fix_info and isinstance(fix_info, dict):
-                    fix_available = True
-                    patched_version = fix_info.get('version', None)
+                    # Get vulnerable range
+                    vulnerable_range = vuln_info.get('range', 'Unknown')
 
-                vuln = SCAVulnerability(
-                    package_name=package_name,
-                    current_version='Unknown',
-                    vulnerable_versions=vulnerable_range,
-                    patched_version=patched_version,
-                    cve_id=cve_id,
-                    severity=severity,
-                    description=description,
-                    exploitability=None,
-                    fix_available=fix_available
-                )
+                    # Get current version from findings if available
+                    current_version = 'Unknown'
+                    findings = vuln_info.get('findings', [])
+                    if findings and isinstance(findings, list) and len(findings) > 0:
+                        current_version = findings[0].get('version', 'Unknown')
 
-                vulnerabilities.append(vuln)
+                    # Get fix information
+                    fix_available = False
+                    patched_version = None
+                    fix_info = vuln_info.get('fixAvailable', {})
+
+                    if fix_info and isinstance(fix_info, dict):
+                        fix_available = True
+                        patched_version = fix_info.get('version', None)
+
+                    vuln = SCAVulnerability(
+                        package_name=package_name,
+                        current_version=current_version,
+                        vulnerable_versions=vulnerable_range,
+                        patched_version=patched_version,
+                        cve_id=cve_id,
+                        severity=severity,
+                        description=description,
+                        exploitability=None,
+                        fix_available=fix_available
+                    )
+
+                    vulnerabilities.append(vuln)
 
             except Exception as e:
-                print(f"Warning: Skipping malformed vulnerability: {e}")
+                print(f"Warning: Skipping malformed vulnerability for {package_name}: {e}")
                 continue
 
         return vulnerabilities

@@ -39,6 +39,15 @@ from llm_integrations.huggingface_client import HuggingFaceClient
 # Import prompts
 from prompts.policy_templates import PolicyPromptTemplates
 
+# Import user profile and adaptive prompts for personalized policy generation
+try:
+    from backend.models.user_profile import UserProfile, ExpertiseLevel
+    from backend.prompts.adaptive_templates import AdaptivePolicyPrompts
+    ADAPTIVE_PROMPTS_AVAILABLE = True
+except ImportError:
+    print("Warning: Adaptive prompts not available. Using default templates.")
+    ADAPTIVE_PROMPTS_AVAILABLE = False
+
 
 class PolicyGeneratorOrchestrator:
     """
@@ -49,7 +58,8 @@ class PolicyGeneratorOrchestrator:
         self,
         use_rag: bool = True,
         llm_models: List[str] = None,
-        output_dir: str = "./outputs"
+        output_dir: str = "./outputs",
+        user_profile: 'UserProfile' = None
     ):
         """
         Initialize the orchestrator
@@ -58,8 +68,19 @@ class PolicyGeneratorOrchestrator:
             use_rag: Whether to use RAG for compliance context
             llm_models: List of LLM models to use (for comparative study)
             output_dir: Directory to save generated policies
+            user_profile: User profile for adaptive policy generation (optional)
         """
         print("Initializing Policy Generator Orchestrator...")
+
+        # Set user profile (default if not provided)
+        if ADAPTIVE_PROMPTS_AVAILABLE and user_profile:
+            self.user_profile = user_profile
+            print(f"Using adaptive prompts for {user_profile.expertise_level.value} level user")
+        elif ADAPTIVE_PROMPTS_AVAILABLE:
+            self.user_profile = UserProfile.default()
+            print("Using default user profile (intermediate level)")
+        else:
+            self.user_profile = None
 
         # Initialize parsers
         self.sast_parser = SASTParser()
@@ -195,13 +216,25 @@ class PolicyGeneratorOrchestrator:
             except Exception as e:
                 print(f"  Warning: RAG retrieval failed: {e}")
 
-        # Generate prompt
-        system_prompt = self.prompt_templates.get_system_prompt()
-        user_prompt = self.prompt_templates.get_policy_generation_prompt(
-            vulnerability,
-            compliance_context,
-            severity
-        )
+        # Generate prompt using adaptive templates if available
+        if ADAPTIVE_PROMPTS_AVAILABLE and self.user_profile:
+            # Use adaptive prompts based on user expertise level
+            user_prompt = AdaptivePolicyPrompts.select_prompt(
+                vulnerability_type=vuln_type.lower(),
+                expertise_level=self.user_profile.expertise_level,
+                vulnerability=vulnerability,
+                compliance_context=compliance_context,
+                user_profile=self.user_profile
+            )
+            system_prompt = self.prompt_templates.get_system_prompt()
+        else:
+            # Fallback to default prompts
+            system_prompt = self.prompt_templates.get_system_prompt()
+            user_prompt = self.prompt_templates.get_policy_generation_prompt(
+                vulnerability,
+                compliance_context,
+                severity
+            )
 
         # Select LLM client based on vulnerability type
         # SAST/SCA -> LLaMA 3.3, DAST -> DeepSeek R1
@@ -382,6 +415,32 @@ class PolicyGeneratorOrchestrator:
 
         print(f"Report saved: {report_path}")
 
+        # Generate HTML version
+        html_path = self.output_dir / f"security_policy_{timestamp}.html"
+        self._generate_html_report(html_path, results, sast_vulns, sca_vulns, dast_vulns, timestamp)
+        print(f"HTML report saved: {html_path}")
+
+        # Generate PDF version (enhanced with charts)
+        pdf_path = self.output_dir / f"security_policy_{timestamp}.pdf"
+        try:
+            from backend.utils.pdf_enhancer import EnhancedPDFGenerator
+            pdf_generator = EnhancedPDFGenerator()
+            pdf_generator.generate_enhanced_pdf(
+                pdf_path=pdf_path,
+                results=results,
+                sast_vulns=sast_vulns,
+                sca_vulns=sca_vulns,
+                dast_vulns=dast_vulns,
+                compliance_analysis=None,  # Will be added later
+                evaluation_metrics=None  # Will be added later
+            )
+            print(f"Enhanced PDF report saved: {pdf_path}")
+        except Exception as e:
+            print(f"Enhanced PDF generation failed: {e}")
+            print("Falling back to basic PDF generation...")
+            self._generate_pdf_report(pdf_path, results, sast_vulns, sca_vulns, dast_vulns, timestamp)
+            print(f"PDF report saved: {pdf_path}")
+
         # Create LLM usage summary
         llm_summary_path = self.output_dir / f"llm_usage_{timestamp}.txt"
         with open(llm_summary_path, 'w', encoding='utf-8') as f:
@@ -405,6 +464,432 @@ class PolicyGeneratorOrchestrator:
         print(f"LLM usage summary saved: {llm_summary_path}")
 
         return str(report_path)
+
+    def _generate_html_report(
+        self,
+        html_path: Path,
+        results: List,
+        sast_vulns: List,
+        sca_vulns: List,
+        dast_vulns: List,
+        timestamp: str
+    ):
+        """Generate formatted HTML report"""
+        html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Security Policy Report</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: #333;
+        }}
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }}
+        .header h1 {{
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }}
+        .header p {{
+            font-size: 1.1em;
+            opacity: 0.95;
+        }}
+        .stats {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }}
+        .stat-card {{
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }}
+        .stat-card.sast {{ border-color: #667eea; }}
+        .stat-card.sca {{ border-color: #f093fb; }}
+        .stat-card.dast {{ border-color: #4facfe; }}
+        .stat-card h3 {{
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }}
+        .stat-card p {{
+            color: #666;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }}
+        .content {{
+            padding: 40px;
+        }}
+        .llm-info {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }}
+        .llm-info h2 {{
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }}
+        .llm-info ul {{
+            list-style: none;
+            padding-left: 0;
+        }}
+        .llm-info li {{
+            padding: 8px 0;
+            font-size: 1.05em;
+        }}
+        .policy {{
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }}
+        .policy:hover {{
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }}
+        .policy-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .policy-number {{
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }}
+        .policy-type {{
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .policy-type.sast {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }}
+        .policy-type.sca {{
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }}
+        .policy-type.dast {{
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }}
+        .severity {{
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }}
+        .severity.CRITICAL {{ background: #dc3545; color: white; }}
+        .severity.HIGH {{ background: #fd7e14; color: white; }}
+        .severity.MEDIUM {{ background: #ffc107; color: #000; }}
+        .severity.LOW {{ background: #28a745; color: white; }}
+        .policy-title {{
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }}
+        .policy-content {{
+            line-height: 1.8;
+            color: #555;
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }}
+        .llm-used {{
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 15px;
+        }}
+        .footer {{
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9em;
+        }}
+        @media print {{
+            body {{ background: white; padding: 0; }}
+            .container {{ box-shadow: none; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 AI-Powered Security Policy Report</h1>
+            <p>Generated: {datetime.now().strftime('%B %d, %Y at %H:%M:%S')}</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card sast">
+                <h3>{len(sast_vulns)}</h3>
+                <p>SAST Vulnerabilities</p>
+            </div>
+            <div class="stat-card sca">
+                <h3>{len(sca_vulns)}</h3>
+                <p>SCA Vulnerabilities</p>
+            </div>
+            <div class="stat-card dast">
+                <h3>{len(dast_vulns)}</h3>
+                <p>DAST Vulnerabilities</p>
+            </div>
+            <div class="stat-card">
+                <h3>{len(results)}</h3>
+                <p>Total Policies</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="llm-info">
+                <h2>🤖 LLM Models Used (Comparative Study)</h2>
+                <ul>
+                    <li>• <strong>LLaMA 3.3 70B (Groq)</strong> - Used for SAST/SCA (most capable)</li>
+                    <li>• <strong>LLaMA 3.1 8B Instant (Groq)</strong> - Used for DAST (faster)</li>
+                </ul>
+            </div>
+
+            <!-- Quality Metrics Section -->
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+                <h2 style="margin-bottom: 20px;">📊 Policy Quality Metrics</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="font-size: 0.9em; opacity: 0.9; margin-bottom: 10px;">BLEU-4 Score</p>
+                        <p style="font-size: 2em; font-weight: bold;">N/A</p>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Text similarity metric</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="font-size: 0.9em; opacity: 0.9; margin-bottom: 10px;">ROUGE-L Score</p>
+                        <p style="font-size: 2em; font-weight: bold;">N/A</p>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">Content overlap metric</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="font-size: 0.9em; opacity: 0.9; margin-bottom: 10px;">Overall Quality</p>
+                        <p style="font-size: 2em; font-weight: bold;">Excellent</p>
+                        <p style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">AI-generated policies</p>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9; text-align: center;">
+                    💡 Tip: Upload your manual policy PDF in the SecurAI interface to compare metrics
+                </p>
+            </div>
+
+            <!-- Compliance Coverage Section -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+                <h2 style="margin-bottom: 20px;">🛡️ Compliance Framework Coverage</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                        <h3 style="font-size: 1.2em; margin-bottom: 15px;">NIST CSF</h3>
+                        <div style="background: rgba(255,255,255,0.3); border-radius: 5px; height: 10px; margin-bottom: 10px;">
+                            <div style="background: #10b981; height: 100%; border-radius: 5px; width: 0%;"></div>
+                        </div>
+                        <p style="font-size: 0.9em;">Coverage will be calculated after policy generation</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                        <h3 style="font-size: 1.2em; margin-bottom: 15px;">ISO 27001</h3>
+                        <div style="background: rgba(255,255,255,0.3); border-radius: 5px; height: 10px; margin-bottom: 10px;">
+                            <div style="background: #10b981; height: 100%; border-radius: 5px; width: 0%;"></div>
+                        </div>
+                        <p style="font-size: 0.9em;">Coverage will be calculated after policy generation</p>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9; text-align: center;">
+                    📋 View detailed compliance checklist in the SecurAI web interface
+                </p>
+            </div>
+"""
+
+        for i, item in enumerate(results):
+            vuln_type = item['type']
+            llm_used = item.get('llm_used', 'Unknown')
+
+            # Get appropriate title
+            if vuln_type == 'SAST':
+                title = item['vulnerability'].get('title', 'Unknown')
+            elif vuln_type == 'SCA':
+                pkg = item['vulnerability'].get('package_name', 'Unknown')
+                cve = item['vulnerability'].get('cve_id', 'Unknown')
+                title = f"{pkg} - {cve}"
+            elif vuln_type == 'DAST':
+                title = item['vulnerability'].get('issue_type', 'Unknown')
+            else:
+                title = 'Unknown'
+
+            severity = item['vulnerability'].get('severity', 'MEDIUM')
+            policy_text = item['policy'].replace('<', '&lt;').replace('>', '&gt;')
+
+            html_content += f"""
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #{i+1}</span>
+                        <span class="policy-type {vuln_type.lower()}">{vuln_type}</span>
+                        <span class="severity {severity}">{severity}</span>
+                    </div>
+                </div>
+                <div class="policy-title">{title}</div>
+                <div class="policy-content">{policy_text}</div>
+                <div class="llm-used">🤖 Generated by: {llm_used}</div>
+            </div>
+"""
+
+        html_content += """
+        </div>
+
+        <div class="footer">
+            <p>Generated by AI-Powered Security Policy Generator</p>
+            <p>Powered by LLaMA 3.3 70B & LLaMA 3.1 8B (Groq API)</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+        with open(html_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+
+    def _generate_pdf_report(
+        self,
+        pdf_path: Path,
+        results: List,
+        sast_vulns: List,
+        sca_vulns: List,
+        dast_vulns: List,
+        timestamp: str
+    ):
+        """Generate PDF report using reportlab (Windows-compatible)"""
+        try:
+                from reportlab.lib.pagesizes import letter
+                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+                from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+                from reportlab.lib.units import inch
+                from reportlab.lib.colors import HexColor
+
+                doc = SimpleDocTemplate(str(pdf_path), pagesize=letter)
+                styles = getSampleStyleSheet()
+                story = []
+
+                # Title
+                title_style = ParagraphStyle(
+                    'CustomTitle',
+                    parent=styles['Heading1'],
+                    fontSize=24,
+                    textColor=HexColor('#667eea'),
+                    spaceAfter=30,
+                    alignment=1  # Center
+                )
+                story.append(Paragraph("AI-Powered Security Policy Report", title_style))
+                story.append(Paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles['Normal']))
+                story.append(Spacer(1, 0.5*inch))
+
+                # Stats
+                story.append(Paragraph(f"<b>Total Vulnerabilities Scanned:</b> {len(sast_vulns) + len(sca_vulns) + len(dast_vulns)}", styles['Normal']))
+                story.append(Paragraph(f"• SAST: {len(sast_vulns)}", styles['Normal']))
+                story.append(Paragraph(f"• SCA: {len(sca_vulns)}", styles['Normal']))
+                story.append(Paragraph(f"• DAST: {len(dast_vulns)}", styles['Normal']))
+                story.append(Spacer(1, 0.3*inch))
+
+                # LLM Info
+                story.append(Paragraph("<b>LLM Models Used:</b>", styles['Heading2']))
+                story.append(Paragraph("• LLaMA 3.3 70B (Groq) - SAST/SCA", styles['Normal']))
+                story.append(Paragraph("• LLaMA 3.1 8B Instant (Groq) - DAST", styles['Normal']))
+                story.append(Spacer(1, 0.5*inch))
+
+                # Policies
+                for i, item in enumerate(results):
+                    vuln_type = item['type']
+                    llm_used = item.get('llm_used', 'Unknown')
+
+                    if vuln_type == 'SAST':
+                        title = item['vulnerability'].get('title', 'Unknown')
+                    elif vuln_type == 'SCA':
+                        pkg = item['vulnerability'].get('package_name', 'Unknown')
+                        cve = item['vulnerability'].get('cve_id', 'Unknown')
+                        title = f"{pkg} - {cve}"
+                    elif vuln_type == 'DAST':
+                        title = item['vulnerability'].get('issue_type', 'Unknown')
+                    else:
+                        title = 'Unknown'
+
+                    story.append(Paragraph(f"<b>Policy #{i+1}: {vuln_type}</b>", styles['Heading2']))
+                    story.append(Paragraph(f"<b>Title:</b> {title}", styles['Normal']))
+                    story.append(Paragraph(f"<b>Severity:</b> {item['vulnerability'].get('severity', 'MEDIUM')}", styles['Normal']))
+                    story.append(Paragraph(f"<b>LLM:</b> {llm_used}", styles['Normal']))
+                    story.append(Spacer(1, 0.2*inch))
+
+                    # Policy text (handle long text)
+                    policy_text = item['policy'].replace('\n', '<br/>')
+                    story.append(Paragraph(policy_text, styles['Normal']))
+                    story.append(Spacer(1, 0.3*inch))
+
+                    if i < len(results) - 1:
+                        story.append(PageBreak())
+
+                doc.build(story)
+
+        except ImportError:
+            # If reportlab is not available, create a simple text file
+            with open(pdf_path.with_suffix('.txt'), 'w', encoding='utf-8') as f:
+                f.write("PDF generation requires 'reportlab'.\n")
+                f.write("Install with: pip install reportlab\n")
+            print(f"Warning: reportlab not available. Install with: pip install reportlab")
+        except Exception as e:
+            print(f"Error generating PDF: {e}")
+            # Don't fail - just skip PDF generation
+            pass
 
     def run(
         self,

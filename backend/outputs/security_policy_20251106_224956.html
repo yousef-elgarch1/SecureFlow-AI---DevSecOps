@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Security Policy Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }
+        .stat-card.sast { border-color: #667eea; }
+        .stat-card.sca { border-color: #f093fb; }
+        .stat-card.dast { border-color: #4facfe; }
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card p {
+            color: #666;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px;
+        }
+        .llm-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+        .llm-info h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .llm-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .llm-info li {
+            padding: 8px 0;
+            font-size: 1.05em;
+        }
+        .policy {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .policy:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .policy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .policy-number {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .policy-type {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .policy-type.sast {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .policy-type.sca {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .policy-type.dast {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .severity {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .severity.CRITICAL { background: #dc3545; color: white; }
+        .severity.HIGH { background: #fd7e14; color: white; }
+        .severity.MEDIUM { background: #ffc107; color: #000; }
+        .severity.LOW { background: #28a745; color: white; }
+        .policy-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .policy-content {
+            line-height: 1.8;
+            color: #555;
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .llm-used {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9em;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 AI-Powered Security Policy Report</h1>
+            <p>Generated: November 06, 2025 at 22:49:56</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card sast">
+                <h3>8</h3>
+                <p>SAST Vulnerabilities</p>
+            </div>
+            <div class="stat-card sca">
+                <h3>0</h3>
+                <p>SCA Vulnerabilities</p>
+            </div>
+            <div class="stat-card dast">
+                <h3>0</h3>
+                <p>DAST Vulnerabilities</p>
+            </div>
+            <div class="stat-card">
+                <h3>5</h3>
+                <p>Total Policies</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="llm-info">
+                <h2>🤖 LLM Models Used (Comparative Study)</h2>
+                <ul>
+                    <li>• <strong>LLaMA 3.3 70B (Groq)</strong> - Used for SAST/SCA (most capable)</li>
+                    <li>• <strong>LLaMA 3.1 8B Instant (Groq)</strong> - Used for DAST (faster)</li>
+                </ul>
+            </div>
+
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #1</span>
+                        <span class="policy-type sast">SAST</span>
+                        <span class="severity MEDIUM">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="policy-title">Unquoted Attribute Var</div>
+                <div class="policy-content">## POLICY IDENTIFIER
+SP-2024-001: Unquoted Attribute Variable Security Policy
+
+## RISK STATEMENT
+The presence of unquoted attribute variables in our web application poses a significant risk to our organization's security posture. If exploited, this vulnerability could allow malicious actors to inject custom JavaScript handlers, potentially leading to cross-site scripting (XSS) attacks. This could result in unauthorized access to sensitive data, compromise of user sessions, and damage to our reputation. The affected systems include our web application, and the impacted users are our customers and employees who interact with the application.
+
+## COMPLIANCE MAPPING
+This policy aligns with the following compliance requirements:
+- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)
+- ISO 27001: A.8.8 (Management of technical vulnerabilities), A.5.10 (Acceptable use of information and other associated assets)
+- Industry standards: OWASP Top 10 (A07:2021 - Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)
+
+## POLICY REQUIREMENTS
+To mitigate this risk, the following security controls must be implemented:
+- All template variables used as attributes must be properly quoted to prevent injection of malicious code.
+- Developers must follow secure coding practices, including input validation and sanitization.
+- Success criteria: All template variables are properly quoted, and no XSS vulnerabilities are detected during code reviews and security scans.
+- Validation methods: Regular code reviews, security scans, and penetration testing will be conducted to ensure compliance with this policy.
+
+## REMEDIATION PLAN
+To remediate this vulnerability, the following technical actions are required:
+- Review and update the affected code to properly quote template variables.
+- Conduct a code review to ensure all template variables are properly quoted.
+- Responsible party: Dev Lead
+- Timeline: 2 weeks
+- Verification steps: Code review, re-scan, and penetration test to ensure no XSS vulnerabilities are present.
+
+## MONITORING AND DETECTION
+To detect similar vulnerabilities in the future, the following measures will be implemented:
+- Regular security scans and code reviews will be conducted to identify potential vulnerabilities.
+- Logging and alerting requirements: All security-related events will be logged and alerts will be sent to the security team for review and action.
+- Continuous monitoring strategies: Our web application will be continuously monitored for signs of XSS attacks, and our security team will respond promptly to any detected incidents.</div>
+                <div class="llm-used">🤖 Generated by: LLaMA 3.3 70B</div>
+            </div>
+
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #2</span>
+                        <span class="policy-type sast">SAST</span>
+                        <span class="severity MEDIUM">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="policy-title">Unquoted Attribute Var</div>
+                <div class="policy-content">## POLICY IDENTIFIER
+Policy ID: SP-2024-001
+Policy Title: Prevention of Cross-Site Scripting (XSS) through Unquoted Attribute Variables
+
+## RISK STATEMENT
+The presence of unquoted attribute variables in our web application poses a significant risk to our organization. If exploited, this vulnerability could allow malicious actors to inject custom JavaScript handlers, potentially leading to unauthorized access, data theft, or disruption of service. The affected systems include our web application, specifically the purchase-basket component, and the data/users at risk are our customers' sensitive information and our organization's reputation.
+
+## COMPLIANCE MAPPING
+This policy aligns with the following compliance requirements:
+- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)
+- ISO 27001 Annex A controls: A.8.8 (Management of technical vulnerabilities), A.5.10 (Acceptable use of information and other associated assets)
+- Industry standards: OWASP A07:2021 (Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)
+
+## POLICY REQUIREMENTS
+To prevent Cross-Site Scripting (XSS) attacks through unquoted attribute variables, the following security controls must be implemented:
+- All template expressions must be enclosed in quotes, following the format "{{ expr }}".
+- Code reviews must be conducted regularly to identify and remediate similar vulnerabilities.
+- Success criteria include the absence of unquoted attribute variables in code reviews and vulnerability scans.
+- Validation methods include automated code analysis tools and manual code reviews.
+
+## REMEDIATION PLAN
+To remediate the identified vulnerability:
+- Technical action: Review and fix the unquoted attribute variable in the purchase-basket.component.html file.
+- Responsible party: Dev Lead
+- Timeline: 2 weeks
+- Verification steps: Conduct a code review and re-scan the application using a vulnerability scanner to ensure the fix is effective.
+
+## MONITORING AND DETECTION
+To detect similar vulnerabilities in the future:
+- Implement logging and alerting mechanisms to monitor web application activity for potential XSS attacks.
+- Conduct regular code reviews and vulnerability scans to identify unquoted attribute variables and other security weaknesses.
+- Utilize continuous monitoring strategies, including automated code analysis tools and manual reviews, to ensure the security and integrity of our web application.</div>
+                <div class="llm-used">🤖 Generated by: LLaMA 3.3 70B</div>
+            </div>
+
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #3</span>
+                        <span class="policy-type sast">SAST</span>
+                        <span class="severity MEDIUM">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="policy-title">Unquoted Attribute Var</div>
+                <div class="policy-content">## POLICY IDENTIFIER
+Policy ID: SP-2024-001
+Policy Title: Prevention of Cross-Site Scripting (XSS) through Unquoted Attribute Variables
+
+## RISK STATEMENT
+The presence of unquoted attribute variables in our web application poses a significant risk to our organization. If exploited, an attacker could inject malicious JavaScript code, potentially leading to unauthorized access, data theft, or disruption of service. This vulnerability affects our web application, specifically the search result component, and could impact all users interacting with the application. The potential consequences include compromised user data, reputational damage, and financial loss.
+
+## COMPLIANCE MAPPING
+This policy aligns with the following compliance requirements:
+- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)
+- ISO 27001: A.8.8 (Management of technical vulnerabilities), A.5.10 (Acceptable use of information and other associated assets), A.8.23 (Web filtering), A.8.3 (Information access restriction)
+- Industry standards: OWASP A07:2021 (Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)
+
+## POLICY REQUIREMENTS
+To mitigate the risk of XSS attacks through unquoted attribute variables, the following security controls must be implemented:
+- All template variables used as attributes must be properly quoted.
+- Regular code reviews must be conducted to identify and fix similar vulnerabilities.
+- The development team must adhere to secure coding practices, including input validation and sanitization.
+Success criteria include:
+- All template variables are properly quoted.
+- No XSS vulnerabilities are detected during code reviews or security scans.
+Validation methods include regular code reviews, automated security scans, and penetration testing.
+
+## REMEDIATION PLAN
+To remediate the identified vulnerability:
+- Technical action: Quote the template variable in the search-result.component.html file (line 40).
+- Responsible party: Dev Lead
+- Timeline: 2 weeks
+- Verification steps: Code review, automated security scan, and penetration test to ensure the vulnerability is resolved and no similar issues exist.
+
+## MONITORING AND DETECTION
+To detect similar vulnerabilities in the future:
+- Implement regular automated security scans and code reviews.
+- Monitor application logs for suspicious activity.
+- Conduct periodic penetration testing to identify vulnerabilities.
+- Maintain up-to-date knowledge of common web application vulnerabilities, including XSS attacks, and apply appropriate security patches and mitigations.</div>
+                <div class="llm-used">🤖 Generated by: LLaMA 3.3 70B</div>
+            </div>
+
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #4</span>
+                        <span class="policy-type sast">SAST</span>
+                        <span class="severity MEDIUM">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="policy-title">Hardcoded Jwt Secret</div>
+                <div class="policy-content">## POLICY IDENTIFIER
+SP-2024-001: Hardcoded Credential Policy
+
+## RISK STATEMENT
+The use of hardcoded credentials, such as the detected hardcoded JWT secret, poses a significant risk to our organization's security posture. If exploited, this vulnerability could lead to unauthorized access to sensitive data, systems, and applications, resulting in potential data breaches, financial losses, and reputational damage. The affected systems include our web applications, APIs, and backend services, which could compromise the confidentiality, integrity, and availability of our data and services.
+
+## COMPLIANCE MAPPING
+This policy aligns with the following compliance requirements:
+- NIST CSF: PR.DS-5 (Data Protection), PR.IP-1 (Identity and Access Control)
+- ISO 27001 Annex A controls: A.8.28 (Secure coding), A.8.1 (User endpoint devices), A.8.5 (Secure authentication)
+- Industry standards: OWASP A3:2017 (Sensitive Data Exposure), CWE-798 (Use of Hard-coded Credentials)
+
+## POLICY REQUIREMENTS
+To mitigate the risk of hardcoded credentials, the following security controls must be implemented:
+- All credentials must be stored securely using environment variables or a secure vault/HSM.
+- Code reviews must be performed regularly to detect and remove hardcoded credentials.
+- Secure coding principles and guidelines must be followed during software development.
+- Success criteria: No hardcoded credentials are detected in code reviews and vulnerability scans.
+- Validation methods: Regular code reviews, vulnerability scans, and penetration testing.
+
+## REMEDIATION PLAN
+To remediate the detected hardcoded JWT secret, the following actions must be taken:
+- Technical action: Remove the hardcoded JWT secret from the code and store it securely using an environment variable or a secure vault/HSM.
+- Responsible party: Dev Lead
+- Timeline: 2 weeks
+- Verification steps: Code review, re-scan, and penetration testing to ensure the vulnerability is resolved.
+
+## MONITORING AND DETECTION
+To detect similar vulnerabilities in the future, the following monitoring and detection strategies must be implemented:
+- Regular code reviews and vulnerability scans must be performed to detect hardcoded credentials.
+- Logging and alerting requirements: All code changes and updates must be logged and reviewed regularly.
+- Continuous monitoring strategies: Implement a continuous integration/continuous deployment (CI/CD) pipeline to automate code reviews, vulnerability scans, and penetration testing.</div>
+                <div class="llm-used">🤖 Generated by: LLaMA 3.3 70B</div>
+            </div>
+
+            <div class="policy">
+                <div class="policy-header">
+                    <div>
+                        <span class="policy-number">Policy #5</span>
+                        <span class="policy-type sast">SAST</span>
+                        <span class="severity MEDIUM">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="policy-title">Unknown Value In Redirect</div>
+                <div class="policy-content">## POLICY IDENTIFIER
+**SP-2024-001: Open Redirect Protection Policy**
+
+## RISK STATEMENT
+The Open Redirect vulnerability poses a significant risk to our organization's security posture. If exploited, an attacker could redirect users to malicious websites, potentially leading to phishing attacks, malware infections, or unauthorized access to sensitive information. This vulnerability affects our web applications, putting our users' data and systems at risk. The potential consequences include reputational damage, financial loss, and compromised user trust.
+
+## COMPLIANCE MAPPING
+This policy aligns with the following compliance requirements:
+- NIST CSF: PR.DS-5 (Data Protection), DE.AE-2 (Anomaly Detection)
+- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.7.2 (Physical entry), A.5.34 (Privacy and protection of personal identifiable information), A.8.33 (Test information), A.8.3 (Information access restriction)
+- Industry standards: OWASP, CWE-601 (URL Redirection to Untrusted Site)
+
+## POLICY REQUIREMENTS
+To mitigate the Open Redirect vulnerability, the following security controls must be implemented:
+- Validate and sanitize all user-inputted URLs to prevent unauthorized redirects
+- Implement a whitelist of allowed redirect URLs
+- Use a secure redirect mechanism, such as a redirect token or a secure token-based system
+- Conduct regular security testing and code reviews to identify and address potential vulnerabilities
+Success criteria include:
+- No unauthorized redirects are allowed
+- All user-inputted URLs are properly validated and sanitized
+- The whitelist of allowed redirect URLs is regularly reviewed and updated
+
+## REMEDIATION PLAN
+To remediate the Open Redirect vulnerability, the following technical actions are required:
+- Review and update the `redirect.ts` file to validate and sanitize user-inputted URLs
+- Implement a whitelist of allowed redirect URLs
+- Conduct a code review to ensure the secure redirect mechanism is properly implemented
+The responsible party for this remediation is the Development Lead. The timeline for completion is 2 weeks. Verification steps include a code review, re-scan, and penetration test to ensure the vulnerability is fully addressed.
+
+## MONITORING AND DETECTION
+To detect similar vulnerabilities in the future, the following monitoring and detection strategies will be implemented:
+- Regular security testing and code reviews
+- Logging and alerting for suspicious redirect activity
+- Continuous monitoring of web application traffic for potential security threats
+- Regular updates to the whitelist of allowed redirect URLs to ensure it remains current and effective.</div>
+                <div class="llm-used">🤖 Generated by: LLaMA 3.3 70B</div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>Generated by AI-Powered Security Policy Generator</p>
+            <p>Powered by LLaMA 3.3 70B & LLaMA 3.1 8B (Groq API)</p>
+        </div>
+    </div>
+</body>
+</html>

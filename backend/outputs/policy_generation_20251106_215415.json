@@ -1,0 +1,377 @@
+[
+  {
+    "type": "SAST",
+    "vulnerability": {
+      "title": "Node Sqli",
+      "severity": "HIGH",
+      "category": "SQL Injection",
+      "file_path": "src/controllers/UserController.js",
+      "line_number": 45,
+      "cwe_id": "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "description": "Detected possible SQL injection. User input is used to construct a SQL query without parameterization or escaping. This could lead to SQL injection if variables in the SQL statement are not properly sanitized.",
+      "recommendation": "Review and fix this vulnerability",
+      "confidence": "HIGH"
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: SQL Injection Protection Policy\n\n## RISK STATEMENT\nThe organization is at risk of a SQL injection attack, which could compromise the confidentiality, integrity, and availability of sensitive user data. If exploited, this vulnerability could lead to unauthorized access, modification, or deletion of data, resulting in significant business disruption and potential regulatory non-compliance. The affected systems include the user management application, and the impacted data includes user credentials and personal information.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001: A.8.8 (Management of technical vulnerabilities), A.5.37 (Documented operating procedures), A.5.26 (Response to information security incidents), A.8.16 (Monitoring activities), A.8.26 (Application security requirements)\n- Industry standards: OWASP Top 10 (A03:2021-Injection), CWE-89 (Improper Neutralization of Special Elements used in an SQL Command)\n\n## POLICY REQUIREMENTS\nTo mitigate the risk of SQL injection attacks, the following security controls must be implemented:\n- All user input must be validated and sanitized before being used in SQL queries.\n- Parameterized queries or prepared statements must be used to separate code from user input.\n- Regular security testing and code reviews must be performed to identify and remediate potential vulnerabilities.\nSuccess criteria include:\n- All user input is validated and sanitized.\n- Parameterized queries or prepared statements are used for all SQL queries.\n- Security testing and code reviews are performed regularly.\n\n## REMEDIATION PLAN\nTo remediate the identified vulnerability, the following technical actions are required:\n- Review and refactor the affected code in src/controllers/UserController.js to use parameterized queries or prepared statements.\n- Perform a thorough code review to identify and remediate any similar vulnerabilities.\nResponsible party: Security Lead\nTimeline: 1 week\nVerification steps: Code review, re-scan, and penetration testing.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following measures must be implemented:\n- Regular security testing and code reviews.\n- Logging and alerting for suspicious database activity.\n- Continuous monitoring of application security using industry-standard tools and techniques.\nBy implementing these measures, the organization can reduce the risk of SQL injection attacks and protect sensitive user data.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SAST",
+    "vulnerability": {
+      "title": "Var In Href",
+      "severity": "MEDIUM",
+      "category": "Cross-Site Scripting (XSS)",
+      "file_path": "src/views/profile.mustache",
+      "line_number": 23,
+      "cwe_id": "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+      "description": "Detected a template variable used in an anchor tag with the 'href' attribute. This allows a malicious actor to input the 'javascript:' URI and is subject to cross-site scripting (XSS) attacks.",
+      "recommendation": "Review and fix this vulnerability",
+      "confidence": "MEDIUM"
+    },
+    "policy": "**POLICY IDENTIFIER**\nSP-2024-001: Cross-Site Scripting (XSS) Protection Policy\n\n**RISK STATEMENT**\nThe organization is at risk of cross-site scripting (XSS) attacks due to the use of template variables in anchor tags with the 'href' attribute. This vulnerability could allow malicious actors to inject malicious code, potentially leading to unauthorized access, data theft, or disruption of services. The affected systems include the organization's web application, and the impacted users are all individuals who interact with the application. If exploited, this vulnerability could result in significant reputational damage, financial loss, and compromised customer trust.\n\n**COMPLIANCE MAPPING**\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001: A.8.23 (Web filtering), A.8.8 (Management of technical vulnerabilities), A.5.7 (Threat intelligence)\n- Industry standards: OWASP Top 10 (A07:2021 - Cross-Site Scripting), CWE-79 (Improper Neutralization of Input During Web Page Generation)\n\n**POLICY REQUIREMENTS**\nTo mitigate the risk of XSS attacks, the organization will implement the following security controls:\n- Validate and sanitize all user input data\n- Use a Content Security Policy (CSP) to define allowed sources of content\n- Implement a Web Application Firewall (WAF) to detect and prevent XSS attacks\n- Conduct regular security testing and code reviews to identify vulnerabilities\nSuccess criteria will be measured by the absence of XSS vulnerabilities in security scans and penetration tests. Validation methods will include code reviews, security testing, and verification of CSP and WAF configurations.\n\n**REMEDIATION PLAN**\nTo remediate the identified vulnerability, the following technical actions are required:\n- Review and fix the template variable usage in the 'href' attribute (src/views/profile.mustache, line 23)\n- Implement input validation and sanitization for all user input data\n- Configure CSP and WAF to prevent XSS attacks\nThe responsible party for remediation is the Development Lead. The timeline for remediation is 2 weeks. Verification steps will include a code review, security testing, and verification of CSP and WAF configurations.\n\n**MONITORING AND DETECTION**\nTo detect similar vulnerabilities in the future, the organization will:\n- Conduct regular security scans and penetration tests\n- Monitor web application logs for suspicious activity\n- Implement a threat intelligence program to stay informed about emerging threats\nContinuous monitoring strategies will include regular code reviews, security testing, and verification of security controls. Logging and alerting requirements will be configured to detect and respond to potential XSS attacks.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SAST",
+    "vulnerability": {
+      "title": "Path Join Resolve Traversal",
+      "severity": "HIGH",
+      "category": "Path Traversal",
+      "file_path": "src/routes/files.js",
+      "line_number": 67,
+      "cwe_id": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "description": "Detected a possible path traversal vulnerability. User input is used to construct a file path without proper sanitization. An attacker could potentially access files outside the intended directory.",
+      "recommendation": "Review and fix this vulnerability",
+      "confidence": "HIGH"
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Path Traversal Protection Policy\n\n## RISK STATEMENT\nThe Path Traversal vulnerability poses a significant risk to our organization's data security. If exploited, an attacker could access sensitive files outside the intended directory, potentially leading to data breaches, intellectual property theft, or disruption of critical business operations. This vulnerability affects our web application, specifically the file handling functionality, and could impact all users who interact with the system.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001 Annex A controls: A.7.1 (Physical security perimeters), A.8.28 (Secure coding), A.8.29 (Security testing in development and acceptance)\n- Relevant industry standards: OWASP A5:2021 (Security Misconfiguration), CWE-22 (Improper Limitation of a Pathname to a Restricted Directory)\n\n## POLICY REQUIREMENTS\nTo mitigate the Path Traversal vulnerability, the following security controls must be implemented:\n- All user input used to construct file paths must be properly sanitized and validated.\n- Implement a whitelist approach to only allow access to intended directories and files.\n- Conduct regular security testing and code reviews to identify and address similar vulnerabilities.\nSuccess criteria include:\n- Verification of input validation and sanitization mechanisms through code review and penetration testing.\n- Confirmation of restricted access to sensitive files and directories.\n\n## REMEDIATION PLAN\nTo remediate the identified vulnerability:\n- Technical actions: Review and fix the vulnerable code in src/routes/files.js (line 67) to properly sanitize user input and restrict file access.\n- Responsible party: Security Lead\n- Timeline: 1 week\n- Verification steps: Conduct a code review and re-scan the application using a vulnerability scanner to ensure the fix is effective.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future:\n- Implement logging and alerting mechanisms to monitor file access and user input.\n- Conduct regular security audits and penetration testing to identify potential vulnerabilities.\n- Utilize static application security testing (SAST) tools to analyze code for security weaknesses.\nContinuous monitoring strategies include regular review of security logs and vulnerability scans to ensure the security controls are effective and up-to-date.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SAST",
+    "vulnerability": {
+      "title": "Express Cookie Session No Httponly",
+      "severity": "MEDIUM",
+      "category": "Session Management",
+      "file_path": "src/config/session.js",
+      "line_number": 12,
+      "cwe_id": "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag",
+      "description": "Cookie session detected without 'httpOnly' flag. This could lead to session hijacking via XSS attacks as JavaScript can access the cookie.",
+      "recommendation": "Review and fix this vulnerability",
+      "confidence": "HIGH"
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Secure Session Management Policy\n\n## RISK STATEMENT\nThe absence of the 'httpOnly' flag in cookie sessions poses a significant risk to our organization's data security. If exploited, this vulnerability could lead to session hijacking via cross-site scripting (XSS) attacks, allowing unauthorized access to sensitive information. This could result in financial loss, reputational damage, and compromised customer data. The affected systems include our web application, and the impacted users are our customers and employees who use the application.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001: A.8.1 (User endpoint devices), A.8.5 (Secure authentication), A.8.23 (Web filtering)\n- Industry standards: OWASP A2:2021 (Cryptographic Failures), CWE-1004 (Sensitive Cookie Without 'HttpOnly' Flag)\n\n## POLICY REQUIREMENTS\nTo mitigate this risk, the following security controls must be implemented:\n- All cookie sessions must be configured with the 'httpOnly' flag to prevent JavaScript access.\n- Regular security testing and code reviews must be performed to identify and remediate similar vulnerabilities.\n- Success criteria include verification of 'httpOnly' flag presence in all cookie sessions, and validation of secure authentication mechanisms.\n- Technical requirements include updating the session.js file to include the 'httpOnly' flag, and implementing secure authentication protocols.\n\n## REMEDIATION PLAN\nTo remediate this vulnerability, the following actions are required:\n- Technical action: Update the session.js file to include the 'httpOnly' flag (line 12).\n- Responsible party: Dev Lead\n- Timeline: 2 weeks\n- Verification steps: Code review, re-scan, and penetration testing to ensure the 'httpOnly' flag is present and secure authentication mechanisms are in place.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following measures must be implemented:\n- Regular security testing and code reviews to identify vulnerabilities in session management and authentication mechanisms.\n- Logging and alerting requirements include monitoring for suspicious activity and unauthorized access attempts.\n- Continuous monitoring strategies include regular vulnerability scans, penetration testing, and code reviews to ensure the security of our web application and sensitive data.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SAST",
+    "vulnerability": {
+      "title": "Hardcoded Secret",
+      "severity": "HIGH",
+      "category": "Hardcoded Secrets",
+      "file_path": "src/config/auth.js",
+      "line_number": 8,
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "description": "Hardcoded secret detected. Secrets should be stored in environment variables or a secure secret management system, not directly in code.",
+      "recommendation": "Review and fix this vulnerability",
+      "confidence": "HIGH"
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Hardcoded Secret Policy\n\n## RISK STATEMENT\nThe presence of hardcoded secrets in our codebase poses a significant risk to the security of our systems and data. If exploited, an attacker could gain unauthorized access to sensitive information, compromising the confidentiality, integrity, and availability of our systems. This could lead to financial losses, reputational damage, and legal liabilities. The affected systems include our production environment, and the impacted data includes sensitive user information and business-critical data.\n\n## COMPLIANCE MAPPING\nThis policy is aligned with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), PR.IP-1 (Identity and Access Control)\n- ISO 27001 Annex A controls: A.8.28 (Secure coding), A.8.12 (Data leakage prevention), A.8.27 (Secure system architecture and engineering principles), A.8.31 (Separation of development, test and production environments), A.8.24 (Use of cryptography)\n- Industry standards: OWASP, CWE-798 (Use of Hard-coded Credentials)\n\n## POLICY REQUIREMENTS\nTo mitigate the risk of hardcoded secrets, the following security controls must be implemented:\n- All secrets must be stored in environment variables or a secure secret management system.\n- Code reviews must be performed to detect and remove hardcoded secrets.\n- Secure coding principles must be applied to software development.\n- Success criteria: All secrets are stored securely, and code reviews are performed regularly.\n- Validation methods: Regular code reviews, security audits, and vulnerability scans.\n\n## REMEDIATION PLAN\nTo remediate the identified vulnerability:\n- Technical action: Review and fix the hardcoded secret in src/config/auth.js (line 8) by storing it in an environment variable or a secure secret management system.\n- Responsible party: Security Lead\n- Timeline: 1 week\n- Verification steps: Code review, re-scan, and penetration test to ensure the vulnerability is resolved.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future:\n- Regular code reviews must be performed to detect hardcoded secrets.\n- Logging and alerting requirements: All code changes must be logged, and alerts must be triggered for suspicious activity.\n- Continuous monitoring strategies: Regular security audits, vulnerability scans, and penetration tests must be performed to identify and remediate vulnerabilities.\n- The Security Lead is responsible for ensuring that these measures are implemented and effective.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SCA",
+    "vulnerability": {
+      "package_name": "lodash",
+      "current_version": "4.17.19",
+      "vulnerable_versions": "<=4.17.20",
+      "patched_version": "4.17.21",
+      "cve_id": "CWE-1321",
+      "severity": "HIGH",
+      "description": "Prototype Pollution in lodash",
+      "exploitability": null,
+      "fix_available": true
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Lodash Prototype Pollution Protection Policy\n\n## RISK STATEMENT\nThe exploitation of the lodash prototype pollution vulnerability could have significant business impacts, including unauthorized modification of sensitive data, disruption of critical services, and potential intellectual property theft. If left unaddressed, this vulnerability could allow attackers to manipulate the prototype chain of JavaScript objects, leading to unintended behavior and security breaches. This vulnerability affects all systems and applications utilizing the lodash library, potentially exposing sensitive user data and intellectual property.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001: A.5.32 (Intellectual Property Rights), A.8.23 (Web Filtering), A.8.31 (Separation of Development, Test, and Production Environments), A.8.30 (Outsourced Development), A.5.10 (Acceptable Use of Information and Other Associated Assets)\n- Industry Standards: OWASP A3:2021-Injection, CWE-1321: Prototype Pollution\n\n## POLICY REQUIREMENTS\nTo mitigate the risks associated with the lodash prototype pollution vulnerability, the following security controls must be implemented:\n- Utilize a secure version of the lodash library that has addressed the prototype pollution vulnerability.\n- Implement input validation and sanitization for all user-provided data to prevent malicious input.\n- Conduct regular security audits and vulnerability assessments to identify and remediate similar issues.\n- Success criteria: Verification of the secure lodash version, validation of input validation and sanitization controls, and successful completion of security audits.\n- Validation methods: Code review, vulnerability scanning, and penetration testing.\n\n## REMEDIATION PLAN\nTo remediate this vulnerability, the following technical actions are required:\n- Update the lodash library to a secure version.\n- Implement input validation and sanitization controls.\n- Conduct a thorough security audit to identify similar vulnerabilities.\n- Responsible party: Security Lead\n- Timeline: 1 week\n- Verification steps: Code review, re-scan, and penetration test.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following measures must be implemented:\n- Regular logging and alerting for suspicious activity related to the lodash library.\n- Continuous monitoring of vulnerability feeds and security advisories for updates on the lodash library.\n- Quarterly security audits and vulnerability assessments to identify and remediate similar issues.\n- Implementation of a Web Application Firewall (WAF) to detect and prevent malicious input.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SCA",
+    "vulnerability": {
+      "package_name": "express",
+      "current_version": "4.17.1",
+      "vulnerable_versions": "<4.19.2",
+      "patched_version": "4.19.2",
+      "cve_id": "CWE-601",
+      "severity": "MEDIUM",
+      "description": "Open Redirect in express",
+      "exploitability": null,
+      "fix_available": true
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Express Open Redirect Protection Policy\n\n## RISK STATEMENT\nThe express open redirect vulnerability poses a significant risk to our organization's web applications, potentially allowing attackers to redirect users to malicious websites, compromising sensitive information and damaging our reputation. If exploited, this vulnerability could lead to phishing attacks, malware distribution, and unauthorized access to our systems. The affected systems include all web applications built using the express framework, and the impacted users are our customers and employees who interact with these applications.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.AE-3 (Anomaly Detection)\n- ISO 27001: A.8.23 (Web filtering), A.5.30 (ICT readiness for business continuity), A.5.26 (Response to information security incidents)\n- Industry standards: OWASP A10:2021 (Server-Side Request Forgery), CWE-601 (URL Redirection to Untrusted Site)\n\n## POLICY REQUIREMENTS\nTo mitigate the express open redirect vulnerability, the following security controls must be implemented:\n- Validate all user-inputted URLs to ensure they are legitimate and authorized.\n- Implement a web application firewall (WAF) to detect and prevent malicious redirects.\n- Conduct regular security audits and penetration testing to identify potential vulnerabilities.\nSuccess criteria include:\n- No detected open redirect vulnerabilities in our web applications.\n- All user-inputted URLs are validated and authorized.\nValidation methods include:\n- Code reviews to ensure proper URL validation.\n- Penetration testing to simulate attacks and identify vulnerabilities.\n\n## REMEDIATION PLAN\nTo remediate the express open redirect vulnerability, the following technical actions are required:\n- Update the express framework to the latest version.\n- Implement URL validation and authorization mechanisms.\nThe responsible party is the Development Lead, and the timeline for remediation is 2 weeks.\nVerification steps include:\n- Code review to ensure proper implementation of URL validation and authorization.\n- Penetration testing to simulate attacks and identify vulnerabilities.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following monitoring and detection strategies will be implemented:\n- Regular security audits and penetration testing.\n- Logging and alerting mechanisms to detect suspicious activity.\n- Continuous monitoring of our web applications for potential vulnerabilities.\nLogging requirements include:\n- All user-inputted URLs must be logged and monitored.\n- Any suspicious activity must be alerted to the security team.\nContinuous monitoring strategies include:\n- Regular code reviews and security audits.\n- Penetration testing and vulnerability scanning.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SCA",
+    "vulnerability": {
+      "package_name": "axios",
+      "current_version": "0.21.1",
+      "vulnerable_versions": ">=0.8.1 <1.6.0",
+      "patched_version": "1.6.0",
+      "cve_id": "CWE-918",
+      "severity": "HIGH",
+      "description": "Server-Side Request Forgery in axios",
+      "exploitability": null,
+      "fix_available": true
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001 - Server-Side Request Forgery (SSRF) Protection Policy\n\n## RISK STATEMENT\nThe Server-Side Request Forgery (SSRF) vulnerability in axios poses a significant risk to our organization's security posture. If exploited, this vulnerability could allow attackers to access sensitive internal systems, data, and services, potentially leading to unauthorized data breaches, lateral movement, and disruption of critical business operations. The affected systems include all web applications utilizing the axios library, and the impacted data includes sensitive user information and internal business data.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001 Annex A controls: A.8.23 (Web filtering), A.8.1 (User endpoint devices), A.5.10 (Acceptable use of information and other associated assets), A.5.33 (Protection of records), A.8.16 (Monitoring activities)\n- Relevant industry standards: OWASP A10:2021 (Server-Side Request Forgery), CWE-918 (Server-Side Request Forgery)\n\n## POLICY REQUIREMENTS\nTo mitigate the SSRF vulnerability, the following security controls must be implemented:\n- Validate and sanitize all user-inputted URLs to prevent unauthorized requests.\n- Implement web filtering to restrict access to internal systems and services.\n- Conduct regular vulnerability scans and penetration testing to identify potential SSRF vulnerabilities.\n- Success criteria: No SSRF vulnerabilities detected during vulnerability scans and penetration testing.\n- Validation methods: Regular code reviews, vulnerability scans, and penetration testing.\n\n## REMEDIATION PLAN\nTo remediate the identified SSRF vulnerability, the following technical actions are required:\n- Update axios to the latest version.\n- Implement URL validation and sanitization for all user-inputted URLs.\n- Configure web filtering to restrict access to internal systems and services.\n- Responsible party: Security Lead.\n- Timeline: 1 week.\n- Verification steps: Code review, re-scan using vulnerability scanning tools, and penetration testing.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following monitoring and detection strategies will be implemented:\n- Regular logging and alerting for suspicious URL requests.\n- Continuous monitoring of web application logs for potential SSRF attacks.\n- Regular vulnerability scans and penetration testing to identify potential SSRF vulnerabilities.\n- Implementation of a Web Application Firewall (WAF) to detect and prevent SSRF attacks.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SCA",
+    "vulnerability": {
+      "package_name": "jsonwebtoken",
+      "current_version": "8.5.1",
+      "vulnerable_versions": "<=8.5.1",
+      "patched_version": "9.0.0",
+      "cve_id": "CWE-327",
+      "severity": "MEDIUM",
+      "description": "jsonwebtoken has insecure default key size",
+      "exploitability": null,
+      "fix_available": true
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Secure JSON Web Token Configuration\n\n## RISK STATEMENT\nThe use of insecure default key sizes in JSON Web Tokens (JWT) poses a significant risk to the confidentiality, integrity, and authenticity of sensitive data. If exploited, an attacker could potentially decode and manipulate JWTs, leading to unauthorized access to protected resources and data. This vulnerability affects all systems, data, and users that rely on JWT for authentication and authorization.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), PR.IP-1 (Identity and Access Control)\n- ISO 27001: A.8.24 (Use of Cryptography), A.8.26 (Application Security Requirements), A.8.27 (Secure System Architecture and Engineering Principles)\n- Industry Standards: OWASP A03:2021 (Injection), CWE-327 (Use of a Broken or Risky Cryptographic Algorithm)\n\n## POLICY REQUIREMENTS\nTo mitigate this vulnerability, the following security controls must be implemented:\n- Use a secure key size for JWT (minimum 2048-bit RSA or equivalent)\n- Implement secure key management practices, including key rotation and revocation\n- Validate JWTs on each request to prevent token manipulation\nSuccess criteria: All JWTs must be generated with a secure key size, and token validation must be performed on each request. Validation methods: Regular code reviews, penetration testing, and vulnerability scanning.\n\n## REMEDIATION PLAN\nTo remediate this vulnerability, the following technical actions are required:\n- Update the JSON Web Token library to use a secure default key size\n- Review and update all JWT-related code to ensure secure key management and token validation\nResponsible party: Dev Lead\nTimeline: 2 weeks\nVerification steps: Code review, re-scan with vulnerability scanning tools, and penetration testing.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future, the following measures must be implemented:\n- Regular vulnerability scanning and penetration testing\n- Logging and alerting on all JWT-related errors and exceptions\n- Continuous monitoring of application security and cryptography practices\nLogging requirements: All JWT-related errors and exceptions must be logged and alerted to the security team. Continuous monitoring strategies: Regular code reviews, security audits, and compliance checks.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "SCA",
+    "vulnerability": {
+      "package_name": "minimist",
+      "current_version": "1.2.5",
+      "vulnerable_versions": "<1.2.6",
+      "patched_version": "10.0.0",
+      "cve_id": "CWE-1321",
+      "severity": "CRITICAL",
+      "description": "Prototype Pollution in minimist",
+      "exploitability": null,
+      "fix_available": true
+    },
+    "policy": "## POLICY IDENTIFIER\nSP-2024-001: Minimist Prototype Pollution Protection Policy\n\n## RISK STATEMENT\nThe minimist prototype pollution vulnerability poses a significant risk to our organization's intellectual property and data security. If exploited, this vulnerability could lead to unauthorized access and modification of sensitive data, resulting in financial loss, reputational damage, and legal liabilities. The affected systems include our web applications and APIs that utilize the minimist library, potentially impacting all users and data stored within these systems.\n\n## COMPLIANCE MAPPING\nThis policy aligns with the following compliance requirements:\n- NIST CSF: PR.DS-5 (Data Protection), DE.CM-8 (Vulnerability Management)\n- ISO 27001: A.5.32 (Intellectual Property Rights), A.8.23 (Web Filtering), A.8.30 (Outsourced Development), A.8.31 (Separation of Development, Test, and Production Environments), A.8.4 (Access to Source Code)\n- Industry standards: OWASP A3:2021 (Injection), CWE-1321 (Prototype Pollution)\n\n## POLICY REQUIREMENTS\nTo mitigate the minimist prototype pollution vulnerability, the following security controls must be implemented:\n- Regularly update and patch the minimist library to the latest version.\n- Implement input validation and sanitization for all user-provided data.\n- Conduct regular code reviews and security audits to identify potential vulnerabilities.\n- Success criteria: No prototype pollution vulnerabilities detected during code reviews and security audits.\n- Validation methods: Automated code scanning tools and manual code reviews.\n\n## REMEDIATION PLAN\nTo remediate the minimist prototype pollution vulnerability:\n- Technical actions: Update the minimist library to the latest version, implement input validation and sanitization, and conduct a thorough code review.\n- Responsible party: CTO (due to critical severity)\n- Timeline: Completion within 24-48 hours\n- Verification steps: Conduct a code review, re-scan the application using automated tools, and perform a penetration test to ensure the vulnerability is fully remediated.\n\n## MONITORING AND DETECTION\nTo detect similar vulnerabilities in the future:\n- Implement continuous monitoring and logging of application security events.\n- Configure alerting systems to notify the security team of potential security incidents.\n- Conduct regular security audits and code reviews to identify potential vulnerabilities.\n- Utilize automated code scanning tools to detect prototype pollution vulnerabilities and other security weaknesses.\nBy following this policy, we can ensure the security and integrity of our systems and data, protecting against the minimist prototype pollution vulnerability and similar threats.",
+    "llm_used": "LLaMA 3.3 70B",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "DAST",
+    "vulnerability": {
+      "url": "http://testapp.local:3000/api/users/search",
+      "endpoint": "/api/users/search",
+      "method": "GET",
+      "issue_type": "SQL Injection",
+      "risk_level": "HIGH",
+      "confidence": "2",
+      "description": "SQL injection may be possible. The following SQL injection was detected: OR 1=1--",
+      "solution": "Do not trust client side input, even if there is client side validation in place. In general, type check all data on the server side and escape all data received from the client. Avoid building SQL queries using string concatenation. Use prepared statements with parameterized queries instead.",
+      "cwe_id": "CWE-89"
+    },
+    "policy": "**SP-2023-001: SQL Injection Protection Policy**\n\n**RISK STATEMENT**\n\nThis policy aims to mitigate the risk of SQL injection attacks on our web application, which may compromise sensitive data and lead to unauthorized access. If exploited, this vulnerability could result in data breaches, financial losses, and reputational damage. The affected systems include our web application, databases, and user accounts.\n\n**COMPLIANCE MAPPING**\n\nThis policy aligns with the following standards and controls:\n\n* NIST Cybersecurity Framework (CSF):\n\t+ PR.DS-5: Protect against unauthorized access to or use of the information system that could be facilitated by malicious insiders, or external entities with or without malicious intentions, including unauthorized external users.\n\t+ ID.AM-1: Identify the organization's information system and the related mission, business functions, or processes.\n* ISO 27001 Annex A controls:\n\t+ A.8.8: Management of technical vulnerabilities\n\t+ A.8.16: Monitoring activities\n\t+ A.8.23: Web filtering\n\t+ A.5.33: Protection of records\n\t+ A.6.1: Screening\n* Industry standards:\n\t+ CWE-89: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')\n\t+ OWASP: SQL Injection Prevention Cheat Sheet\n\n**POLICY REQUIREMENTS**\n\nTo mitigate the risk of SQL injection attacks, the following security controls must be implemented:\n\n1. **Input Validation and Sanitization**: All user input must be validated and sanitized on the server-side to prevent malicious data from being injected into SQL queries.\n2. **Parameterized Queries**: Prepared statements with parameterized queries must be used instead of string concatenation to build SQL queries.\n3. **Regular Code Reviews**: Regular code reviews must be conducted to identify and address potential vulnerabilities.\n4. **Logging and Alerting**: Logging and alerting mechanisms must be implemented to detect and respond to potential SQL injection attacks.\n\n**Success Criteria and Validation Methods**\n\n* Input validation and sanitization must be implemented for all user input.\n* Parameterized queries must be used for all database interactions.\n* Regular code reviews must be conducted quarterly.\n* Logging and alerting mechanisms must be implemented and tested quarterly.\n\n**REMEDIATION PLAN**\n\nTo remediate this vulnerability, the following technical actions must be taken:\n\n* Responsible Party: Dev Lead\n* Timeline: 2 weeks\n* Verification Steps:\n\t+ Code review\n\t+ Re-scan with a web application scanner\n\t+ Penetration testing\n\n**MONITORING AND DETECTION**\n\nTo detect similar vulnerabilities in the future, the following monitoring and detection strategies must be implemented:\n\n* Regular web application scanning\n* Regular code reviews\n* Logging and alerting mechanisms\n* Continuous monitoring of system logs and network traffic\n\nBy implementing these security controls and monitoring strategies, we can mitigate the risk of SQL injection attacks and protect our sensitive data and systems.",
+    "llm_used": "LLaMA 3.1 8B Instant",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "DAST",
+    "vulnerability": {
+      "url": "http://testapp.local:3000/search",
+      "endpoint": "/search",
+      "method": "GET",
+      "issue_type": "Cross Site Scripting (Reflected)",
+      "risk_level": "HIGH",
+      "confidence": "2",
+      "description": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product.",
+      "solution": "Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid. Phase: Implementation - Ensure all input is validated, filtered, and sanitized. Convert special characters to HTML entities.",
+      "cwe_id": "CWE-79"
+    },
+    "policy": "**POLICY IDENTIFIER:**\nSP-2023-001: Cross-Site Scripting (XSS) Vulnerability Prevention and Mitigation\n\n**RISK STATEMENT:**\nThe Cross-Site Scripting (XSS) vulnerability poses a medium-risk threat to the organization's web applications, potentially allowing attackers to inject malicious code into user browsers. If exploited, this vulnerability could lead to unauthorized access, data theft, or reputational damage. The affected systems include web applications, user data, and sensitive information stored within these applications.\n\n**COMPLIANCE MAPPING:**\n\n- **NIST Cybersecurity Framework (CSF):**\n  - PR.DS-5: Implement secure coding practices to prevent vulnerabilities.\n  - PR.DS-6: Use secure coding techniques to prevent vulnerabilities.\n- **ISO 27001 Annex A:**\n  - A.8.23: Web filtering to reduce exposure to malicious content.\n  - A.8.28: Secure coding principles to be applied in software development.\n  - A.8.29: Security testing processes to be defined and implemented in the development life cycle.\n  - A.8.8: Management of technical vulnerabilities to be performed.\n- **Industry Standards:**\n  - CWE-79: Cross-Site Scripting (XSS) vulnerability.\n  - OWASP: Secure Coding Practices.\n\n**POLICY REQUIREMENTS:**\n\n1. **Input Validation and Sanitization:** Ensure all user input is validated, filtered, and sanitized to prevent XSS attacks. This includes converting special characters to HTML entities.\n2. **Secure Coding Practices:** Implement secure coding practices, such as using vetted libraries and frameworks, to prevent XSS vulnerabilities.\n3. **Security Testing:** Define and implement security testing processes in the development life cycle to detect and prevent XSS vulnerabilities.\n4. **Web Filtering:** Implement web filtering to reduce exposure to malicious content.\n\n**Success Criteria:**\n\n- All web applications will be free from XSS vulnerabilities.\n- Secure coding practices will be implemented and enforced.\n- Regular security testing will be performed to detect and prevent XSS vulnerabilities.\n\n**REMEDIATION PLAN:**\n\n1. **Responsible Party:** Development Lead\n2. **Timeline:** 2 weeks\n3. **Technical Actions:**\n  - Review and update web application code to implement input validation and sanitization.\n  - Implement secure coding practices, such as using vetted libraries and frameworks.\n  - Perform security testing to detect and prevent XSS vulnerabilities.\n4. **Verification Steps:**\n  - Code review to ensure secure coding practices are implemented.\n  - Re-scan web applications for XSS vulnerabilities.\n  - Perform penetration testing to verify the effectiveness of security measures.\n\n**MONITORING AND DETECTION:**\n\n1. **Logging and Alerting:** Implement logging and alerting mechanisms to detect XSS attacks and vulnerabilities.\n2. **Continuous Monitoring:** Perform regular security testing and vulnerability scanning to detect and prevent XSS vulnerabilities.\n3. **Incident Response:** Establish an incident response plan to respond to XSS attacks and vulnerabilities.",
+    "llm_used": "LLaMA 3.1 8B Instant",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "DAST",
+    "vulnerability": {
+      "url": "http://testapp.local:3000/api/profile/update",
+      "endpoint": "/api/profile/update",
+      "method": "POST",
+      "issue_type": "Absence of Anti-CSRF Tokens",
+      "risk_level": "MEDIUM",
+      "confidence": "2",
+      "description": "No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent.",
+      "solution": "Phase: Architecture and Design - Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation - Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.",
+      "cwe_id": "CWE-352"
+    },
+    "policy": "**SP-2023-001: Cross-Site Request Forgery (CSRF) Protection Policy**\n\n**RISK STATEMENT**\n\nThis policy addresses the risk of Cross-Site Request Forgery (CSRF) attacks, which can compromise the security of our web applications and expose sensitive user data. If exploited, a CSRF attack can lead to unauthorized changes to user profiles, financial transactions, or other sensitive information. This vulnerability affects our web application's API, specifically the `http://testapp.local:3000/api/profile/update` endpoint, and poses a medium risk to our organization.\n\n**COMPLIANCE MAPPING**\n\nThis policy aligns with the following compliance requirements:\n\n* ISO 27001: A.8.23 (Web filtering), A.8.8 (Management of technical vulnerabilities), A.5.14 (Information transfer), and A.6.4 (Disciplinary process)\n* NIST Cybersecurity Framework (CSF): PR.DS-5 (Protect the confidentiality, integrity, and availability of information), and RC.CO (Recovery activities)\n* Industry standards: OWASP (OWASP CSRFGuard), CWE (CWE-352)\n\n**POLICY REQUIREMENTS**\n\nTo mitigate the risk of CSRF attacks, the following security controls must be implemented:\n\n1. **Technical Requirements**: Implement a vetted library or framework (e.g., OWASP CSRFGuard) that prevents CSRF attacks. Ensure that the application is free of cross-site scripting issues.\n2. **Procedural Requirements**: Conduct regular code reviews to identify and address potential CSRF vulnerabilities.\n3. **Success Criteria**: The application must pass a security audit and penetration testing to ensure that CSRF attacks are mitigated.\n\n**REMEDIATION PLAN**\n\nTo remediate this vulnerability, the following technical actions must be taken:\n\n1. **Responsible Party**: Development Lead\n2. **Timeline**: 2 weeks\n3. **Verification Steps**: Code review, re-scan, and penetration testing\n\n**MONITORING AND DETECTION**\n\nTo detect similar vulnerabilities in the future, the following strategies must be implemented:\n\n1. **Logging and Alerting**: Configure logging and alerting mechanisms to detect potential CSRF attacks.\n2. **Continuous Monitoring**: Conduct regular security audits and penetration testing to identify and address potential vulnerabilities.\n3. **Code Review**: Conduct regular code reviews to ensure that the application is free of CSRF vulnerabilities.\n\n**DISCIPLINARY PROCESS**\n\nIn the event of a CSRF attack, a disciplinary process will be followed to take actions against personnel and other relevant interested parties who have committed an information security policy violation.\n\n**REVIEW AND UPDATE**\n\nThis policy will be reviewed and updated annually or as needed to ensure that it remains effective in mitigating the risk of CSRF attacks.",
+    "llm_used": "LLaMA 3.1 8B Instant",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "DAST",
+    "vulnerability": {
+      "url": "http://testapp.local:3000/api/login",
+      "endpoint": "/api/login",
+      "method": "POST",
+      "issue_type": "Weak Authentication Method",
+      "risk_level": "MEDIUM",
+      "confidence": "2",
+      "description": "HTTP basic or digest authentication has been used over an unsecured connection. The credentials can be read and then reused by someone with access to the network.",
+      "solution": "Protect the connection using HTTPS or use a stronger authentication mechanism",
+      "cwe_id": "CWE-287"
+    },
+    "policy": "**SP-2023-001: Secure Authentication over Unsecured Connections**\n\n**Risk Statement:**\n\nThe use of HTTP basic or digest authentication over an unsecured connection poses a medium-severity risk to our organization. If exploited, an unauthorized party could intercept and reuse user credentials, compromising the confidentiality and integrity of our systems and data. This vulnerability affects our web application's login functionality, potentially impacting all users who access the system through the affected endpoint.\n\n**Compliance Mapping:**\n\n* NIST Cybersecurity Framework (CSF):\n\t+ PR.DS-5: Implement secure protocols for authentication and key exchange\n\t+ PR.DS-6: Implement secure protocols for data transmission\n* ISO 27001 Annex A controls:\n\t+ A.8.5: Secure authentication\n\t+ A.8.21: Security of network services\n\t+ A.8.1: User endpoint devices\n\t+ A.7.14: Secure disposal or re-use of equipment\n* Industry standards:\n\t+ CWE-287: Improper Authentication\n\t+ OWASP: Authentication and Session Management\n\n**Policy Requirements:**\n\nTo mitigate this vulnerability, we require the following security controls to be implemented:\n\n1. **Technical Requirements:**\n\t* Update the login endpoint to use HTTPS (TLS 1.2 or later) for all connections.\n\t* Implement a stronger authentication mechanism, such as OAuth or JWT-based authentication.\n2. **Procedural Requirements:**\n\t* Conduct regular security audits to identify and address potential vulnerabilities.\n\t* Develop and maintain a secure coding standard for all development teams.\n3. **Success Criteria:**\n\t* The login endpoint is updated to use HTTPS within 2 weeks.\n\t* A stronger authentication mechanism is implemented within 4 weeks.\n\t* Regular security audits are conducted quarterly.\n\n**Remediation Plan:**\n\n* **Responsible Party:** Development Lead\n* **Timeline:** 2 weeks\n* **Technical Actions:**\n\t+ Update the login endpoint to use HTTPS.\n\t+ Implement a stronger authentication mechanism.\n* **Verification Steps:**\n\t+ Code review by the development team.\n\t+ Re-scan the application using a web application scanner (e.g., OWASP ZAP).\n\t+ Conduct a penetration test to verify the effectiveness of the remediation.\n\n**Monitoring and Detection:**\n\nTo detect similar vulnerabilities in the future, we will:\n\n1. **Implement Logging and Alerting:**\n\t* Configure the web application firewall (WAF) to log and alert on potential authentication-related attacks.\n\t* Implement a security information and event management (SIEM) system to monitor and alert on suspicious activity.\n2. **Conduct Continuous Monitoring:**\n\t* Regularly scan the application for vulnerabilities using a web application scanner.\n\t* Conduct penetration tests to verify the effectiveness of our security controls.\n\t* Review and update our secure coding standard regularly.",
+    "llm_used": "LLaMA 3.1 8B Instant",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  },
+  {
+    "type": "DAST",
+    "vulnerability": {
+      "url": "http://testapp.local:3000/",
+      "endpoint": "/",
+      "method": "GET",
+      "issue_type": "Cookie Without Secure Flag",
+      "risk_level": "LOW",
+      "confidence": "3",
+      "description": "A cookie has been set without the secure flag, which means that the cookie can be accessed via unencrypted connections.",
+      "solution": "Whenever a cookie contains sensitive information or is a session token, then it should always be passed using an encrypted channel. Ensure that the secure flag is set for cookies containing such sensitive information.",
+      "cwe_id": "CWE-614"
+    },
+    "policy": "**Security Policy Section: SP-2023-001 - Secure Cookie Flag**\n\n**Policy Identifier:** SP-2023-001\n\n**Policy Title:** Secure Cookie Flag Policy\n\n**Risk Statement:**\n\nThe Secure Cookie Flag policy aims to mitigate the risk of sensitive information exposure due to insecure cookie transmission. If exploited, this vulnerability can lead to unauthorized access to user sessions, compromising confidentiality and integrity. Potential consequences include:\n\n* Unauthorized access to sensitive data\n* Compromised user sessions\n* Reputation damage due to data breaches\n\nAffected systems/data/users:\n\n* All web applications using cookies for session management\n* Users with sensitive information stored in cookies\n\n**Compliance Mapping:**\n\n* NIST Cybersecurity Framework (CSF):\n\t+ PR.DS-5: Protect data in use\n\t+ PR.DS-6: Protect data in transit\n* ISO 27001 Annex A controls:\n\t+ A.8.5: Secure authentication\n\t+ A.8.21: Security of network services\n\t+ A.8.27: Secure system architecture and engineering principles\n\t+ A.8.28: Secure coding\n\t+ A.8.1: User endpoint devices\n* Industry standards:\n\t+ CWE-614: Information Exposure Through an Insecure Protocol\n\t+ OWASP: Secure Cookies\n\n**Policy Requirements:**\n\nTo ensure secure cookie transmission, the following requirements must be implemented:\n\n1. **Technical Requirements:**\n\t* Set the secure flag for cookies containing sensitive information or session tokens.\n\t* Ensure that cookies are transmitted over encrypted channels (HTTPS).\n2. **Procedural Requirements:**\n\t* Review and update cookie-related code to ensure secure flag is set.\n\t* Conduct regular security audits to detect similar vulnerabilities.\n3. **Success Criteria:**\n\t* 100% of cookies containing sensitive information or session tokens have the secure flag set.\n\t* No instances of insecure cookie transmission are detected during security audits.\n\n**Remediation Plan:**\n\n* **Responsible Party:** Dev Lead\n* **Timeline:** 2 weeks\n* **Technical Actions:**\n\t1. Review and update cookie-related code to set the secure flag.\n\t2. Conduct a code review to ensure secure flag is set for all relevant cookies.\n\t3. Re-scan the application for similar vulnerabilities.\n* **Verification Steps:**\n\t1. Conduct a code review to ensure secure flag is set.\n\t2. Re-scan the application for similar vulnerabilities.\n\n**Monitoring and Detection:**\n\nTo detect similar vulnerabilities in the future:\n\n* Regularly conduct security audits and vulnerability scans.\n* Implement logging and alerting mechanisms to detect insecure cookie transmission.\n* Continuously monitor application code and configuration for changes that may introduce similar vulnerabilities.\n\nBy implementing this policy, we ensure the secure transmission of sensitive information and protect user sessions from unauthorized access.",
+    "llm_used": "LLaMA 3.1 8B Instant",
+    "compliance_mapping": {
+      "NIST CSF": [
+        "PR.AC-4",
+        "DE.CM-7"
+      ],
+      "ISO 27001": [
+        "A.14.2.5"
+      ]
+    }
+  }
+]

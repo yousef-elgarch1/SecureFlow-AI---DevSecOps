@@ -1,6 +1,6 @@
 """
 Main policy generation orchestrator
 """
-from .policy_generator import PolicyGenerator
+from .policy_generator import PolicyGeneratorOrchestrator
 
-__all__ = ['PolicyGenerator']
+__all__ = ['PolicyGeneratorOrchestrator']

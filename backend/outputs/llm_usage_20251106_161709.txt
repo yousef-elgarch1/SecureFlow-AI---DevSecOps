@@ -1,0 +1,12 @@
+LLM USAGE SUMMARY
+================================================================================
+
+LLaMA 3.3 70B (Groq):
+  Policies generated: 1
+  Used for: SAST, SCA (code vulnerabilities)
+
+LLaMA 3.1 8B Instant (Groq):
+  Policies generated: 0
+  Used for: DAST (runtime vulnerabilities)
+
+Total errors: 0

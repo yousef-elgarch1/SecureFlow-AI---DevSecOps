@@ -1,0 +1,15 @@
+================================================================================
+AI-POWERED SECURITY POLICY GENERATION REPORT
+================================================================================
+
+Generated: 2025-11-06 15:35:19
+Total Vulnerabilities Scanned: 0
+  - SAST: 0
+  - SCA: 0
+  - DAST: 0
+
+LLM Models Used (Comparative Study):
+  - SAST/SCA: LLaMA 3.3 70B (Groq - most capable)
+  - DAST: LLaMA 3.1 8B Instant (Groq - faster)
+================================================================================
+
